@@ -75,6 +75,8 @@ function getWeekLabel(nextPayday: string) {
 
   return (
   <main style={{ padding: 24, maxWidth: 420 }}>
+   <p style={{ color: "red" }}>DEPLOY TEST</p>
+
     <h1 style={{ marginBottom: 24 }}>HeleMåneden</h1>
 
     {!isEditing ? (
