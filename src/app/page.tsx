@@ -80,6 +80,17 @@ const weeklyPlan = dailyPlan * 7;
 
   const planDelta =
     actualSpent !== null ? plannedSpentUntilNow - actualSpent : null;
+const remainingBalance =
+  actualSpent !== null
+    ? Math.max(0, monthStartBalance - actualSpent)
+    : monthStartBalance;
+    const dailyAvailable = Math.floor(remainingBalance / daysLeft);
+
+const weeklyAvailable =
+  planDelta !== null
+    ? Math.max(0, weeklyPlan + planDelta)
+    : weeklyPlan;
+
 
   /* =========================
      UKELOGIKK (din modell)
@@ -98,11 +109,13 @@ const weeklyPlan = dailyPlan * 7;
       : weeklyPlan;
 
   const todayAvailable =
-    activeTab === "day"
-      ? Math.floor(adjustedWeekRemaining / daysLeftThisWeek)
-      : activeTab === "week"
-      ? adjustedWeekRemaining
-      : monthStartBalance;
+  activeTab === "day"
+    ? dailyAvailable
+    : activeTab === "week"
+    ? weeklyAvailable
+    : monthStartBalance;
+
+
 
   /* =========================
      RENDER
