@@ -1,31 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import styles from "./page.module.css";
+
 
 import {
   calculateDaysLeft, 
-  calculateBudget,
-  calculateDaysLeftInWeek,
 } from "./lib/budget";
 
+
+import { calculateDaysBetween } from "./lib/budget";
+
+
 export default function Home() {
-  const [balance, setBalance] = useState(9000);
+  const [monthStartBalance, setMonthStartBalance] = useState(12000);
   const [nextPayday, setNextPayday] = useState("2026-02-01");
+
+  const [monthStartDate, setMonthStartDate] = useState(
+  new Date().toISOString().slice(0, 10)
+);
+
+
   const [isEditing, setIsEditing] = useState(false);
+ const [isMonthLocked, setIsMonthLocked] = useState(false);
+   const [dailyBalance, setDailyBalance] = useState<number | null>(null);
+
+useEffect(() => {
+  const saved = localStorage.getItem("dailyBalance");
+  if (saved) {
+    setDailyBalance(Number(saved));
+  }
+}, []);
+
+
+
 
   const [activeTab, setActiveTab] = useState<"day" | "week" | "month">("day");
 
 
-  const daysLeft = calculateDaysLeft(new Date(nextPayday));
- const daysLeftInWeek = calculateDaysLeftInWeek(new Date(nextPayday));
+  const daysLeft = calculateDaysBetween(
+  new Date(monthStartDate),
+  new Date(nextPayday)
+);
 
 
-const budget = calculateBudget({
-  currentBalance: balance,
-  daysLeftInMonth: daysLeft,
-  daysLeftInWeek,
-});
+const dailyAvailable =
+  daysLeft > 0 ? Math.floor(monthStartBalance / daysLeft) : 0;
+const dailyDelta =
+  dailyBalance !== null ? dailyBalance - dailyAvailable : null;
+
+
+
+
 
 function getWeekLabel(nextPayday: string) {
   const today = new Date();
@@ -101,11 +128,11 @@ function getWeekLabel(nextPayday: string) {
 
 
 
+<p className={styles.cardAmount}>
+  {activeTab === "day" && `${dailyAvailable} kr`}
+  {activeTab === "week" && `${dailyAvailable * 7} kr`}
+  {activeTab === "month" && `${monthStartBalance} kr`}
 
-         <p className={styles.cardAmount}>
-  {activeTab === "day" && `${budget.dailyAvailable} kr`}
-  {activeTab === "week" && `${budget.weeklyAvailable} kr`}
-  {activeTab === "month" && `${budget.monthlyAvailable} kr`}
 </p>
 
 
@@ -113,14 +140,60 @@ function getWeekLabel(nextPayday: string) {
 
 
 
-          <p className={styles.cardMeta}>
+        <p className={styles.cardMeta}>
   {daysLeft} dager igjen til lønn
 </p>
 
+{dailyDelta !== null && (
+  <p
+    style={{
+      marginTop: 8,
+      fontSize: 14,
+      color: dailyDelta >= 0 ? "#2e7d32" : "#c62828",
+    }}
+  >
+    {dailyDelta >= 0
+      ? `Du ligger ${dailyDelta} kr foran planen`
+      : `Du ligger ${Math.abs(dailyDelta)} kr bak planen`}
+  </p>
+)}
+
+
         </section>
 
+<div style={{ marginTop: 16 }}>
+  <label className={styles.label}>
+    <span style={{ color: "#555" }}>Saldo i dag</span>
+    <input
+      className={styles.input}
+      type="number"
+      placeholder="Hva står på konto akkurat nå?"
+      value={dailyBalance ?? ""}
+      onChange={(e) => {
+  const value = e.target.value === "" ? null : Number(e.target.value);
+  setDailyBalance(value);
+
+  if (value !== null) {
+    localStorage.setItem("dailyBalance", value.toString());
+  } else {
+    localStorage.removeItem("dailyBalance");
+  }
+}}
+
+    />
+  </label>
+</div>
+
+<p style={{ fontSize: 12, color: "#666", marginTop: 4 }}>
+  Påvirker ikke planen – kun for å se hvordan du ligger an.
+</p>
+
+
         <button
-          onClick={() => setIsEditing(true)}
+       onClick={() => {
+       setIsEditing(true);
+       setIsMonthLocked(false);
+  }}
           style={{
             marginTop: 32,
             width: "100%",
@@ -132,7 +205,7 @@ function getWeekLabel(nextPayday: string) {
             cursor: "pointer",
           }}
         >
-          Endre saldo eller lønnsdato
+          Endre måneds saldo
         </button>
       </>
     ) : (
@@ -143,13 +216,28 @@ function getWeekLabel(nextPayday: string) {
 
   <section className={styles.edit}>
     <label className={styles.label}>
-      Saldo på konto
+      Saldo ved lønn
       <input
-        className={styles.input}
-        type="number"
-        value={balance}
-        onChange={(e) => setBalance(Number(e.target.value))}
-      />
+  className={styles.input}
+  type="number"
+  value={monthStartBalance}
+  disabled={isMonthLocked}
+  onChange={(e) =>
+    setMonthStartBalance(Number(e.target.value))
+  }
+/>
+
+<label className={styles.label}>
+  Lønnsdato / startdato
+  <input
+    className={styles.input}
+    type="date"
+    value={monthStartDate}
+    onChange={(e) => setMonthStartDate(e.target.value)}
+  />
+</label>
+
+
     </label>
 
     <label className={styles.label}>
@@ -165,7 +253,10 @@ function getWeekLabel(nextPayday: string) {
 
 
   <button
-    onClick={() => setIsEditing(false)}
+  onClick={() => {
+    setIsEditing(false);
+    setIsMonthLocked(true);
+  }}
     style={{
       marginTop: 24,
       width: "100%",
