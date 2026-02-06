@@ -1,291 +1,167 @@
-/* =========================
-   Design tokens – Light
-========================= */
-:root {
-  /* Backgrounds */
-  --bg-app: #f5f6f4;
-  --bg-surface: #ffffff;
-  --bg-card: #eceee9;
-  --bg-muted: #e1e4de;
-
-  /* Text */
-  --text-primary: #0f172a;   /* AAA */
-  --text-secondary: #334155; /* AA */
-  --text-muted: #475569;
-
-  /* Accent */
-  --accent-primary: #4b6f5d;
-  --accent-positive: #14532d;
-  --accent-warning: #9a3412;
-
-  /* UI */
-  --border-subtle: #cbd5c1;
-  --focus-ring: #1e40af;
+.main {
+  min-height: 100vh;
+  padding: 24px 16px 56px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.02));
 }
 
-/* =========================
-   Dark mode
-========================= */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-app: #0b0f0e;
-    --bg-surface: #0f1413;
-    --bg-card: #141a18;
-    --bg-muted: #1b2220;
+.shell {
+  max-width: 720px;
+  margin: 0 auto;
+  display: grid;
+  gap: 14px;
+}
 
-    --text-primary: #ecfdf5;
-    --text-secondary: #c7d2cc;
-    --text-muted: #94a3a0;
+.topHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
 
-    --accent-primary: #6fa89a;
-    --accent-positive: #4ade80;
-    --accent-warning: #fb7185;
+.h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
 
-    --border-subtle: #2a3330;
-    --focus-ring: #60a5fa;
+.meta {
+  margin: 6px 0 0;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.heroCard {
+  border-radius: 22px;
+  background: white;
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.08);
+}
+
+.heroInner {
+  padding: 32px;
+  display: grid;
+  gap: 16px;
+  text-align: left;
+}
+
+.heroBlock {
+  display: grid;
+  gap: 6px;
+}
+
+.heroKicker {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.heroValue {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.heroValueSmall {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.panel {
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  padding: 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.helper {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  opacity: 0.85;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 680px) {
+  .grid2 {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
-/* =========================
-   PAGE LAYOUT
-========================= */
-
-.page {
-  display: flex;
-  min-height: 100vh;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-geist-sans);
-  background-color: var(--bg-app);
-  color: var(--text-primary);
+.field {
+  display: grid;
+  gap: 6px;
 }
-
-.main {
-  display: flex;
-  min-height: 100vh;
-  width: 100%;
-  max-width: 800px;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  background-color: var(--bg-surface);
-  padding: 120px 60px;
-}
-
-/* =========================
-   CARD
-========================= */
-
-.card {
-  background: var(--bg-card);
-  border-radius: 20px;
-  padding: 0px;
-  width: 100%;
-  
-}
-
-.cardTitle {
-  font-size: 16px;
-  color: var(--text-secondary);
-}
-
-.cardAmount {
-  font-size: 48px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 12px 0;
-}
-
-.cardMeta {
-  font-size: 14px;
-  color: var(--text-muted);
-}
-
-/* =========================
-   TABS
-========================= */
-
-.tabsWrapper {
-  display: flex;
-  width: 100%;              /* ⬅️ matcher kort/input */
-  padding: 4px;
-  margin-bottom: 16px;
-
-  background: var(--bg-muted);
-  border-radius: 10px;
-}
-
-
-.tab {
-  flex: 1;                  /* ⬅️ automatisk lik bredde */
-  padding: 8px 0;
-  border-radius: 8px;
-  border: none;
-
-  background: transparent;
-  color: var(--text-secondary);
-
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  text-align: center;
-}
-
-
-.activeTab {
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.08),
-    inset 0 0 0 1px var(--border-subtle);
-}
-
-
-.tab:not(:last-child) {
-  box-shadow: inset -1px 0 0 var(--border-subtle);
-}
-
-
-/* =========================
-   INPUTS
-========================= */
 
 .label {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 16px;
-  font-size: 14px;
-  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .input {
-  padding: 14px 16px;
+  min-height: 44px;
   border-radius: 12px;
-  border: none;
-
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  font-size: 16px;
-
-  box-shadow: inset 0 0 0 1px var(--border-subtle);
-}
-
-
-.input::placeholder {
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-.input:focus {
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  padding: 10px 12px;
+  font-size: 15px;
   outline: none;
-  border-color: var(--focus-ring);
+  background: white;
 }
 
-/* =========================
-   BUTTONS
-========================= */
-
-.saveButton {
-  margin-top: 24px;
-  width: 100%;
-  padding: 14px;
-  border-radius: 999px;
-  border: 1px solid var(--border-subtle);
-  background: var(--bg-surface);
-  color: var(--text-secondary);
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.saveButton:hover {
-  background: var(--bg-muted);
-}
-
-/* =========================
-   EDIT MODE
-========================= */
-
-.edit {
-  margin-top: 24px;
-  padding: 20px;
-  border-radius: 16px;
-  background: var(--bg-card);
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-
-@media (max-width: 600px) {
-  .main {
-    padding: 48px 24px;
-  }
-
-  .cardAmount {
-    font-size: 40px;
-  }
-}
-
-.tab:focus-visible {
-  outline: 2px solid var(--focus-ring);
+.input:focus-visible {
+  outline: 3px solid rgba(0, 90, 255, 0.45);
   outline-offset: 2px;
 }
 
-.contentStack {
-  width: 100%;
-  max-width: 360px;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-
-  background: var(--bg-card);
-  border-radius: 20px;
-  padding: 24px;
-}
-
-
-.cardBelow {
-  width: 100%;
-  margin-top: 16px;
-  padding-top: 16px;
-
-  border-top: 1px solid var(--border-subtle);
-}
-
-
-.metaHint {
-  margin-top: 6px;
+.hint {
+  margin: 0;
   font-size: 12px;
-  color: var(--text-muted);
-}
-/* =========================
-   CONTENT WIDTH (GLOBAL)
-========================= */
-
-.content {
-  width: 100%;
-  max-width: 360px;
-  display: flex;
-  flex-direction: column;
+  opacity: 0.7;
+  line-height: 1.35;
 }
 
-/* =========================
-   CONTENT TRANSITION
-========================= */
-
-.fade {
-  animation: fadeSlide 180ms ease-out;
+.secondaryBtn {
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  background: transparent;
+  cursor: pointer;
+  font-weight: 700;
 }
 
-@keyframes fadeSlide {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.secondaryBtn:focus-visible {
+  outline: 3px solid rgba(0, 90, 255, 0.45);
+  outline-offset: 2px;
+}
+
+.note {
+  margin-top: 6px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.noteTitle {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  opacity: 0.8;
+}
+
+.noteText {
+  margin: 6px 0 0;
+  font-size: 13px;
+  opacity: 0.8;
+  line-height: 1.35;
 }

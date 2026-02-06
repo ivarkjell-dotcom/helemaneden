@@ -1,0 +1,38 @@
+.card {
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  padding: 18px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.desc {
+  margin: 6px 0 0;
+  font-size: 13px;
+  opacity: 0.75;
+  line-height: 1.35;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.body {
+  display: grid;
+  gap: 12px;
+}

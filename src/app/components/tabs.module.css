@@ -1,0 +1,39 @@
+.wrap {
+  width: 100%;
+}
+
+.tablist {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.tab {
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tabSelected {
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.tab:focus-visible,
+.tabSelected:focus-visible {
+  outline: 3px solid rgba(0, 90, 255, 0.45);
+  outline-offset: 2px;
+}
