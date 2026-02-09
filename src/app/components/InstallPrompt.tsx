@@ -2,12 +2,17 @@
 
 import { useEffect, useState } from "react";
 
+const DISMISS_KEY = "hm_dismiss_install_prompt_v1";
+
 let deferredPrompt: any = null;
 
 export default function InstallPrompt() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
+    const dismissed = localStorage.getItem(DISMISS_KEY);
+    if (dismissed === "true") return;
+
     const handler = (e: any) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -25,15 +30,14 @@ export default function InstallPrompt() {
     if (!deferredPrompt) return;
 
     deferredPrompt.prompt();
-    const choiceResult = await deferredPrompt.userChoice;
-
-    if (choiceResult.outcome === "accepted") {
-      console.log("User accepted install");
-    } else {
-      console.log("User dismissed install");
-    }
+    await deferredPrompt.userChoice;
 
     deferredPrompt = null;
+    setShow(false);
+  };
+
+  const handleDismiss = () => {
+    localStorage.setItem(DISMISS_KEY, "true");
     setShow(false);
   };
 
@@ -54,25 +58,42 @@ export default function InstallPrompt() {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+        gap: 12,
         zIndex: 9999,
       }}
     >
       <div style={{ fontSize: 14 }}>
-        📱 Legg HeleMåneden til som app på hjemskjermen
+        📱 Legg <strong>HeleMåneden</strong> til som app på hjemskjermen
       </div>
-      <button
-        onClick={handleInstall}
-        style={{
-          padding: "6px 12px",
-          borderRadius: 8,
-          border: "none",
-          background: "#0f172a",
-          color: "white",
-          fontWeight: 600,
-        }}
-      >
-        Installer
-      </button>
+
+      <div style={{ display: "flex", gap: 8 }}>
+        <button
+          onClick={handleInstall}
+          style={{
+            padding: "6px 12px",
+            borderRadius: 8,
+            border: "none",
+            background: "#0f172a",
+            color: "white",
+            fontWeight: 600,
+          }}
+        >
+          Installer
+        </button>
+
+        <button
+          onClick={handleDismiss}
+          style={{
+            padding: "6px 10px",
+            borderRadius: 8,
+            border: "none",
+            background: "transparent",
+            color: "#555",
+          }}
+        >
+          Lukk
+        </button>
+      </div>
     </div>
   );
 }

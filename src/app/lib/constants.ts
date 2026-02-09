@@ -22,3 +22,6 @@ export const BUDGET = {
 } as const;
 
 export const WEEKDAY_NO = ["søn", "man", "tir", "ons", "tor", "fre", "lør"] as const;
+
+// app/lib/constants.ts
+export const DISMISS_INSTALL_PROMPT_KEY = "hm_dismiss_install_prompt_v1";

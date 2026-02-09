@@ -1,36 +1,46 @@
+/* =========================================================
+   HeleMåneden – Global CSS (WCAG-ready Light/Dark)
+   ========================================================= */
+
+/* -----------------------------
+   Reset / base
+----------------------------- */
 :root {
   color-scheme: light;
 }
 
-html,
-body {
+html, body {
   padding: 0;
   margin: 0;
 }
 
+* { box-sizing: border-box; }
+
+a { color: inherit; }
+
 body {
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
-    "Apple Color Emoji", "Segoe UI Emoji";
-  color: var(--text-primary);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+    Arial, "Apple Color Emoji", "Segoe UI Emoji";
   background: var(--bg-app);
+  color: var(--text-primary);
+  padding-bottom: 72px;
 }
 
-
-* {
-  box-sizing: border-box;
-}
-
-a {
-  color: inherit;
-}
-
+/* Accessible focus ring */
 :focus-visible {
-  outline: 3px solid rgba(63,166,124,0.45);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
+/* Reduce motion if user prefers */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* -----------------------------
+   Spacing system (8px base)
+----------------------------- */
 :root {
-  /* Spacing system (8px base) */
   --space-xs: 8px;
   --space-s: 16px;
   --space-m: 24px;
@@ -38,44 +48,6 @@ a {
   --space-xl: 48px;
 }
 
-/* Standard vertical rhythm for pages */
-.page {
-  padding: var(--space-m);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-l);
-}
-
-/* Group of cards (Dag/Uke/Måned sections) */
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-m);
-}
-
-/* Individual card spacing */
-.card {
-  background: var(--bg-card);
-  border-radius: 20px;
-  padding: var(--space-l);
-  border: 1px solid var(--border-soft);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
-}
-
-
-/* Content inside cards */
-.cardContent {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-s);
-}
-
-/* Big separation (ex: between tabs and history) */
-.sectionDivider {
-  margin-top: var(--space-xl);
-}
-
-/* Mobile adjustments */
 @media (max-width: 640px) {
   :root {
     --space-m: 20px;
@@ -84,41 +56,313 @@ a {
   }
 }
 
-body {
-  padding-bottom: 72px;
-}
+/* =========================================================
+   🎨 Color tokens (SEMANTIC)
+   Goal: all UI reads from these vars.
+========================================================= */
+
+/* ---------- Light (default) ---------- */
 :root {
-  /* 🌿 Calm green – trygg, ikke fintech-skrik */
+  /* Surfaces */
+  --bg-app: #fafafa;
+  --bg-elev-1: #ffffff;     /* cards, panels */
+  --bg-elev-2: #ffffff;     /* modals, navs if needed */
+  --bg-sunken: #f3f4f6;     /* inputs/progress track subtle */
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: rgba(15, 23, 42, 0.72);
+  --text-muted: rgba(15, 23, 42, 0.55);
+  --text-inverse: #ffffff;
+
+  /* Borders / dividers */
+  --border-soft: rgba(0,0,0,0.10);
+  --border-strong: rgba(0,0,0,0.18);
+
+  /* Shadows */
+  --shadow-1: 0 6px 18px rgba(0,0,0,0.05);
+  --shadow-2: 0 10px 30px rgba(0,0,0,0.10);
+
+  /* Brand green
+     NOTE: #3fa67c with white text fails WCAG AA (~3.0:1).
+     So we use a darker primary for buttons to pass AA (>=4.5:1). */
   --green-50:  #f2faf6;
   --green-100: #dcf2e6;
   --green-300: #7fc7aa;
   --green-500: #3fa67c;
-  --green-700: #2f7d5f;
+  --green-650: #2f7d5f;     /* WCAG-safe button green */
+  --green-700: #2b6f55;
 
-  /* 🪶 Base UI */
-  --bg-app: #fafafa;
-  --bg-card: #ffffff;
-  --border-soft: rgba(0,0,0,0.08);
+  /* Accents */
+  --accent-safe: var(--green-650);
+  --accent-soft: rgba(47,125,95,0.14);
 
-  /* 🧠 Tekst */
-  --text-primary: #0f172a;
-  --text-secondary: rgba(15, 23, 42, 0.7);
-  --text-muted: rgba(15, 23, 42, 0.5);
+  /* Status */
+  --ok: var(--green-650);
+  --warn: #b45309;          /* amber-700 */
+  --bad: #b91c1c;           /* red-700 */
 
-  /* ✨ Fokus / trygg handling */
-  --accent-safe: var(--green-500);
+  /* Focus ring */
+  --focus-ring: rgba(47,125,95,0.45);
+
+  /* Controls */
+  --control-bg: var(--bg-elev-1);
+  --control-border: var(--border-soft);
+  --control-border-hover: var(--border-strong);
+  --control-placeholder: rgba(15,23,42,0.45);
+
+  /* Buttons */
+  --btn-primary-bg: var(--accent-safe);
+  --btn-primary-fg: #ffffff; /* passes AA with --green-650 */
+  --btn-primary-bg-hover: #256b52;
+
+  --btn-secondary-bg: transparent;
+  --btn-secondary-fg: var(--text-primary);
+  --btn-secondary-border: var(--border-strong);
+
+  /* Nav bars */
+  --nav-bg: var(--bg-elev-1);
+  --nav-border: var(--border-soft);
+
+  /* Icons */
+  --icon: var(--text-primary);
+  --icon-muted: rgba(15,23,42,0.62);
+
+  /* Progress */
+  --progress-track: var(--bg-sunken);
+  --progress-fill-ok: var(--ok);
+  --progress-fill-warn: var(--warn);
+  --progress-fill-bad: var(--bad);
 }
 
-/* Subtle calm background wash */
+/* Soft background wash (light only) */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(63,166,124,0.06) 0%,
-    rgba(63,166,124,0.00) 60%
+    rgba(47,125,95,0.06) 0%,
+    rgba(47,125,95,0.00) 60%
   );
   pointer-events: none;
   z-index: -1;
 }
+
+/* ---------- Dark ---------- */
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces (as dark as possible while keeping hierarchy) */
+  --bg-app: #020617;        /* near-black (OLED-friendly) */
+  --bg-elev-1: #0b1220;     /* cards */
+  --bg-elev-2: #0f172a;     /* navs / stronger surfaces */
+  --bg-sunken: #070c16;     /* input/progress track */
+
+  /* Text */
+  --text-primary: #f8fafc;
+  --text-secondary: rgba(248,250,252,0.78);
+  --text-muted: rgba(248,250,252,0.58);
+  --text-inverse: #020617;
+
+  /* Borders */
+  --border-soft: rgba(255,255,255,0.12);
+  --border-strong: rgba(255,255,255,0.20);
+
+  /* Shadows */
+  --shadow-1: 0 10px 30px rgba(0,0,0,0.65);
+  --shadow-2: 0 18px 60px rgba(0,0,0,0.75);
+
+  /* Accents:
+     In dark mode, original green (#3fa67c) has great contrast on dark backgrounds.
+     For green buttons in dark mode, use dark text for WCAG. */
+  --accent-safe: var(--green-500);
+  --accent-soft: rgba(63,166,124,0.18);
+
+  /* Status */
+  --ok: var(--green-300);   /* lighter for visibility */
+  --warn: #f59e0b;          /* amber-500/600 */
+  --bad: #ef4444;           /* red-500 */
+
+  /* Focus ring */
+  --focus-ring: rgba(127,199,170,0.55);
+
+  /* Controls */
+  --control-bg: var(--bg-sunken);
+  --control-border: var(--border-soft);
+  --control-border-hover: var(--border-strong);
+  --control-placeholder: rgba(248,250,252,0.42);
+
+  /* Buttons */
+  --btn-primary-bg: var(--accent-safe);
+  --btn-primary-fg: var(--text-inverse); /* dark text on green = WCAG */
+  --btn-primary-bg-hover: #7fc7aa;
+
+  --btn-secondary-bg: transparent;
+  --btn-secondary-fg: var(--text-primary);
+  --btn-secondary-border: var(--border-strong);
+
+  /* Nav bars */
+  --nav-bg: var(--bg-elev-2);
+  --nav-border: rgba(255,255,255,0.10);
+
+  /* Icons */
+  --icon: var(--text-primary);
+  --icon-muted: rgba(248,250,252,0.72);
+
+  /* Progress */
+  --progress-track: rgba(255,255,255,0.10);
+  --progress-fill-ok: var(--ok);
+  --progress-fill-warn: var(--warn);
+  --progress-fill-bad: var(--bad);
+}
+
+/* No light wash in dark mode */
+html[data-theme="dark"] body::before { display: none; }
+
+/* =========================================================
+   🧩 Common layout classes (your existing ones)
+========================================================= */
+.page {
+  padding: var(--space-m);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-l);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+}
+
+.sectionDivider { margin-top: var(--space-xl); }
+
+/* Cards */
+.card {
+  background: var(--bg-elev-1);
+  border-radius: 20px;
+  padding: var(--space-l);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-1);
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+}
+
+/* =========================================================
+   ✅ Global elements: inputs, buttons, labels, icons
+========================================================= */
+label { color: var(--text-secondary); }
+
+input, select, textarea {
+  width: 100%;
+  background: var(--control-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--control-border);
+  border-radius: 12px;
+  padding: 12px;
+  outline: none;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--control-placeholder);
+}
+
+input:hover, select:hover, textarea:hover {
+  border-color: var(--control-border-hover);
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Buttons (default baseline) */
+button {
+  color: var(--text-primary);
+}
+
+.btn-primary {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-primary:hover { background: var(--btn-primary-bg-hover); }
+
+.btn-secondary {
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-fg);
+  border: 1px solid var(--btn-secondary-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Icons (lucide uses stroke="currentColor" by default) */
+.icon { color: var(--icon); }
+.icon-muted { color: var(--icon-muted); }
+
+/* =========================================================
+   📌 Nav bars (bottom/top)
+   NOTE: inline styles override these. Use var() in TSX.
+========================================================= */
+.bottom-nav, .top-bar {
+  background: var(--nav-bg);
+  border-color: var(--nav-border);
+  color: var(--text-primary);
+}
+
+/* =========================================================
+   📊 Progress
+========================================================= */
+.progress {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--progress-track);
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+}
+
+.progress > .fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: var(--progress-fill-ok);
+}
+
+.progress.ok > .fill { background: var(--progress-fill-ok); }
+.progress.warn > .fill { background: var(--progress-fill-warn); }
+.progress.bad > .fill { background: var(--progress-fill-bad); }
+
+/* =========================================================
+   📲 Install banner
+========================================================= */
+.install-banner {
+  position: fixed;
+  bottom: 80px;
+  left: 16px;
+  right: 16px;
+  background: var(--bg-elev-1);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow-2);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 50;
+  border: 1px solid var(--border-soft);
+  color: var(--text-primary);
+}
+
+.install-banner .actions { display: flex; gap: 8px; }
+.install-banner button.secondary { background: transparent; color: var(--text-secondary); }

@@ -22,7 +22,6 @@ function isValidBudget(settings: any) {
   return today >= monthStartDate && today < nextPayday;
 }
 
-/* 👇 1️⃣ PROPS DEFINERT */
 type TopBarProps = {
   onMenuClick: () => void;
 };
@@ -46,8 +45,9 @@ export function TopBar({ onMenuClick }: TopBarProps) {
         position: "sticky",
         top: 0,
         zIndex: 50,
-        background: "white",
-        borderBottom: "1px solid rgba(0,0,0,0.08)",
+        background: "var(--nav-bg)",
+        borderBottom: "1px solid var(--nav-border)",
+        color: "var(--text-primary)",
       }}
     >
       {/* TOP BAR */}
@@ -68,7 +68,7 @@ export function TopBar({ onMenuClick }: TopBarProps) {
             fontWeight: 800,
             fontSize: 16,
             textDecoration: "none",
-            color: "#0f172a",
+            color: "var(--text-primary)",
           }}
         >
           HeleMåneden
@@ -79,10 +79,11 @@ export function TopBar({ onMenuClick }: TopBarProps) {
           aria-label="Åpne meny"
           onClick={onMenuClick}
           style={{
-            background: "none",
+            background: "transparent",
             border: "none",
             padding: 4,
             cursor: "pointer",
+            color: "var(--icon)",
           }}
         >
           <Menu size={22} />
@@ -96,8 +97,8 @@ export function TopBar({ onMenuClick }: TopBarProps) {
           style={{
             display: "block",
             textDecoration: "none",
-            background: "rgba(255, 200, 0, 0.15)",
-            borderTop: "1px solid rgba(0,0,0,0.06)",
+            background: "var(--accent-soft)",
+            borderTop: "1px solid var(--border-soft)",
           }}
         >
           <div
@@ -107,14 +108,16 @@ export function TopBar({ onMenuClick }: TopBarProps) {
               padding: "10px 16px",
               fontSize: 14,
               fontWeight: 600,
-              color: "#5c4400",
+              color: "var(--text-primary)",
               display: "flex",
               alignItems: "center",
               gap: 8,
             }}
           >
-            <Calendar size={18} />
-            <span>Ny lønnsperiode ikke satt – legg inn lønn og datoer</span>
+            <Calendar size={18} color="currentColor" />
+            <span>
+              Ny lønnsperiode ikke satt – legg inn lønn og datoer
+            </span>
           </div>
         </Link>
       )}

@@ -131,26 +131,40 @@ export default function Home() {
 
                   const helper =
                     dayDelta > 0
-                      ? `Du har igjen ${fmtKr(dayDelta)} kr mer enn planlagt per dag.`
+                      ? `Det har igjen ${fmtKr(dayDelta)} kr mer per dag denne uken enn ved jevnt forbruk.`
                       : dayDelta < 0
-                      ? `Du har igjen ${fmtKr(Math.abs(dayDelta))} kr mindre enn planlagt per dag.`
+                      ? `Du har igjen ${fmtKr(Math.abs(dayDelta))} kr mindre per dag denne uken, enn ved jevnt forbruk.`
                       : `Du følger planen i dag.`;
 
                   return (
                     <>
                       <BudgetSplitCard
-                        titleLeft="I dag kan du bruke"
-                        titleRight="Plan"
+                         titleLeft="Trygt å bruke per dag denne uken"
+                        titleRight="Jevn plan"
                         actual={dayRemaining}
                         planned={dayMax}
-                        deltaLabel={helper}
+                        
+
+
                       />
                       <PlanProgressBar
-                        label="Brukt av dagens ramme"
+                        label="Bruk i forhold til jevnt forbruk"
                         used={dayUsed}
                         max={dayMax}
                         planUsed={dayMax}
-                      />
+                        />
+
+                         <div
+                          style={{
+                          marginTop: 6,
+                          fontSize: 12,
+                          lineHeight: 1.4,
+                          color: "var(--text-muted)",
+                         }}
+                         >
+                       {helper}
+                       </div>
+
                     </>
                   );
                 })()}
@@ -166,14 +180,14 @@ export default function Home() {
                   return (
                     <>
                       <BudgetSplitCard
-                        titleLeft="Denne uken"
-                        titleRight="Plan"
+                        titleLeft="Igjen enne uken"
+                        titleRight="Jevn plan"
                         actual={weekRemaining}
                         planned={weekMax}
                         deltaLabel=""
                       />
                       <PlanProgressBar
-                        label="Forbrukstempo"
+                        label="Forbrukdenne uken"
                         used={weekUsed}
                         max={weekMax}
                         planUsed={weekPlanUsed}
@@ -194,14 +208,14 @@ export default function Home() {
                   return (
                     <>
                       <BudgetSplitCard
-                        titleLeft="Denne måneden"
-                        titleRight="Plan"
+                        titleLeft="Igjen denne måneden"
+                        titleRight="Sum ved lønn"
                         actual={monthRemaining}
                         planned={monthMax}
                         deltaLabel=""
                       />
                       <PlanProgressBar
-                        label="Jevnt forbruk"
+                        label="Forbruk denne måneden"
                         used={monthUsed}
                         max={monthMax}
                         planUsed={monthPlanUsed}

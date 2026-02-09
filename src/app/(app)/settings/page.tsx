@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { PlanProgressBar } from "@/app/components/PlanProgressBar";
 
 const KEY = "hm_settings_v1";
 
 type Settings = {
   monthStartBalance: number;
-  monthStartDate: string; // YYYY-MM-DD
-  nextPayday: string;     // YYYY-MM-DD
+  monthStartDate: string;
+  nextPayday: string;
 };
 
 export default function SettingsPage() {
@@ -20,6 +21,8 @@ export default function SettingsPage() {
     nextPayday: "2026-02-01",
   });
 
+  
+
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
@@ -27,10 +30,10 @@ export default function SettingsPage() {
     } catch {}
   }, []);
 
+  
+
   function save() {
     localStorage.setItem(KEY, JSON.stringify(s));
-
-    // ✅ Gå rett tilbake til Home
     router.push("/");
   }
 
@@ -44,8 +47,9 @@ export default function SettingsPage() {
         gap: 14,
       }}
     >
-      <h1 style={{ fontSize: 20, margin: 0 }}>Innstillinger</h1>
+      <h1 style={{ fontSize: 20, margin: 0 }}>Lønn og oppsett</h1>
 
+      {/* Inputs */}
       <label style={{ display: "grid", gap: 6 }}>
         <span style={{ fontWeight: 700 }}>Saldo ved lønn (start)</span>
         <input
@@ -54,11 +58,6 @@ export default function SettingsPage() {
           onChange={(e) =>
             setS({ ...s, monthStartBalance: Number(e.target.value || 0) })
           }
-          style={{
-            padding: 12,
-            borderRadius: 12,
-            border: "1px solid rgba(0,0,0,0.12)",
-          }}
         />
       </label>
 
@@ -70,11 +69,6 @@ export default function SettingsPage() {
           onChange={(e) =>
             setS({ ...s, monthStartDate: e.target.value })
           }
-          style={{
-            padding: 12,
-            borderRadius: 12,
-            border: "1px solid rgba(0,0,0,0.12)",
-          }}
         />
       </label>
 
@@ -86,27 +80,17 @@ export default function SettingsPage() {
           onChange={(e) =>
             setS({ ...s, nextPayday: e.target.value })
           }
-          style={{
-            padding: 12,
-            borderRadius: 12,
-            border: "1px solid rgba(0,0,0,0.12)",
-          }}
         />
       </label>
 
-      <button
-        onClick={save}
-        style={{
-          padding: "12px 14px",
-          borderRadius: 12,
-          border: "1px solid rgba(0,0,0,0.12)",
-          background: "var(--accent-safe)",
-          color: "white",
-          fontWeight: 800,
-        }}
-      >
+      <button className="btn-primary" onClick={save}>
         Lagre og start måneden
       </button>
+
+      <hr style={{ margin: "24px 0", opacity: 0.2 }} />
+
+      {/* App section */}
+      
     </main>
   );
 }

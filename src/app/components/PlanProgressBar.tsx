@@ -1,117 +1,136 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
+type Props = {
+  label: string;
+  used: number;
+  max: number;
+  planUsed?: number;
+  showInfo?: boolean;
+};
+
+function clamp(n: number, min = 0, max = 1) {
+  return Math.min(max, Math.max(min, n));
+}
+
+/* ℹ️ Lite info-ikon */
 function InfoIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="11" stroke="#555" strokeWidth="2" />
-      <line x1="12" y1="10" x2="12" y2="16" stroke="#555" strokeWidth="2" />
-      <circle cx="12" cy="7" r="1.2" fill="#555" />
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="var(--icon-muted)"
+        strokeWidth="2"
+      />
+      <line
+        x1="12"
+        y1="10"
+        x2="12"
+        y2="16"
+        stroke="var(--icon-muted)"
+        strokeWidth="2"
+      />
+      <circle cx="12" cy="7" r="1.2" fill="var(--icon-muted)" />
     </svg>
   );
 }
 
 export function PlanProgressBar({
+  label,
   used,
   max,
   planUsed,
-  label,
   showInfo = false,
-}: {
-  used: number;
-  max: number;
-  planUsed: number;
-  label: string;
-  showInfo?: boolean;
-}) {
-  const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
-  const safeMax = max > 0 ? max : 1;
+}: Props) {
+  const progress = max > 0 ? clamp(used / max) : 0;
+  const planProgress =
+    planUsed !== undefined && max > 0
+      ? clamp(planUsed / max)
+      : null;
 
-  let usedPct = clamp01(used / safeMax);
-  const planPct = clamp01(planUsed / safeMax);
-
-  // ✅ UX-fiks: hvis du ligger i pluss → vis grønn bar med minimum bredde
-  if (used <= 0) {
-    usedPct = 0.05; // 5% synlig grønn bar
-  }
-
-  let barColor = "#4CAF50"; // grønn default
-
-  if (usedPct > planPct && usedPct < 1) barColor = "#FFC107"; // gul
-  if (usedPct >= 1) barColor = "#F44336"; // rød
-
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [open, setOpen] = useState(false);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
 
+  /* Lukk tooltip ved klikk utenfor */
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClick(e: MouseEvent) {
       if (
         tooltipRef.current &&
-        !tooltipRef.current.contains(event.target as Node)
+        !tooltipRef.current.contains(e.target as Node)
       ) {
-        setShowTooltip(false);
+        setOpen(false);
       }
     }
 
-    if (showTooltip) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showTooltip]);
+    if (open) document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
 
   return (
-    <div style={{ marginTop: 14 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       {/* Header */}
       <div
         style={{
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
-          fontSize: 12,
-          opacity: 0.9,
+          gap: 6,
+          fontSize: 13,
+          fontWeight: 600,
+          color: "var(--text-secondary)",
         }}
       >
         <span>{label}</span>
 
         {showInfo && (
-          <div style={{ position: "relative" }}>
+          <div style={{ position: "relative" }} ref={tooltipRef}>
             <button
-              onClick={() => setShowTooltip((v) => !v)}
+              type="button"
+              aria-label="Forklaring"
+              aria-expanded={open}
+              onClick={() => setOpen((v) => !v)}
               style={{
                 border: "none",
                 background: "none",
+                padding: 2,
                 cursor: "pointer",
-                padding: 4,
               }}
             >
               <InfoIcon />
             </button>
 
-            {showTooltip && (
+            {open && (
               <div
-                ref={tooltipRef}
+                role="tooltip"
                 style={{
                   position: "absolute",
+                  top: "calc(100% + 8px)",
                   right: 0,
-                  top: -100,
-                  backgroundColor: "#ffffff",
-                  border: "1px solid #e0e0e0",
-                  borderRadius: 10,
-                  padding: 12,
                   width: 240,
+                  padding: 12,
+                  borderRadius: 12,
+                  background: "var(--tooltip-bg)",
+                  color: "var(--text-primary)",
+                  border: "1px solid var(--border-soft)",
+                  boxShadow: "var(--shadow-elevated)",
                   fontSize: 12,
-                  boxShadow: "0 6px 20px rgba(0,0,0,0.25)",
-                  zIndex: 9999,
+                  lineHeight: 1.4,
+                  zIndex: 1000,
                 }}
               >
-                <strong>Punkt ved jevnt forbruk</strong>
-                <p style={{ marginTop: 6, lineHeight: 1.4 }}>
+                <strong>Pilen viser jevnt forbruk</strong>
+                <p style={{ marginTop: 6 }}>
                   Fyll viser hvor mye du faktisk har brukt.
-                  Streken viser hvor langt du burde vært hvis du bruker penger jevnt.
+                  Pilen viser hvor du burde vært nå hvis forbruket
+                  er jevnt fordelt i perioden.
                 </p>
               </div>
             )}
@@ -119,41 +138,56 @@ export function PlanProgressBar({
         )}
       </div>
 
-      {/* Progressbar */}
+      {/* Progress wrapper (tillater pil over baren) */}
       <div
         style={{
           position: "relative",
-          height: 12,
-          borderRadius: 999,
-          background: "rgba(0,0,0,0.08)",
-          overflow: "hidden",
-          marginTop: 8,
+          paddingTop: 14, // plass til pil
         }}
       >
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: `${usedPct * 100}%`,
-            background: barColor,
-            transition: "width 0.3s ease",
-          }}
-        />
+        {/* 🔺 Pil – jevnt forbruk */}
+        {showInfo && planProgress !== null && (
+          <div
+  style={{
+    position: "absolute",
+    left: `${planProgress * 100}%`,
+    top: 0,
+    transform: "translateX(-50%)",
+    width: 0,
+    height: 0,
+    borderLeft: "7px solid transparent",
+    borderRight: "7px solid transparent",
+    borderTop: "10px solid var(--border-strong)", // 👈 peker NED
+  }}
+  aria-hidden
+/>
 
-        {/* Plan-markør */}
+        )}
+
+        {/* Selve progresjonsstripen */}
+        <div className="progress">
+          <div
+            className="fill"
+            style={{
+              width: `${progress * 100}%`,
+              transition: "width 0.4s ease",
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Forklaring under baren */}
+      {showInfo && (
         <div
           style={{
-            position: "absolute",
-            left: `calc(${planPct * 100}% - 1px)`,
-            top: 0,
-            bottom: 0,
-            width: 2,
-            background: "rgba(0,0,0,0.6)",
+            fontSize: 12,
+            color: "var(--text-muted)",
           }}
-        />
-      </div>
+        >
+          Pilen viser et jevnt forbruk.
+          Større kjøp tidligere i perioden kan gi lavere saldo nå, uten at det betyr at noe er galt.
+        </div>
+      )}
     </div>
   );
 }
