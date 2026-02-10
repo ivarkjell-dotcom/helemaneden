@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { calculateBudget } from "../lib/budget";
 import type { ISODate } from "../lib/types";
+import { PageHeader } from "../components/PageHeader";
 
 import { Tabs } from "../components/Tabs";
 import { BudgetSplitCard } from "../components/BudgetSplitCard";
@@ -26,6 +27,13 @@ function todayISO(): ISODate {
 
 function fmtKr(n: number) {
   return new Intl.NumberFormat("nb-NO").format(Math.round(n));
+}
+function fmtDateShortNO(iso: string) {
+  return new Intl.DateTimeFormat("nb-NO", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+  }).format(new Date(iso));
 }
 
 export default function Home() {
@@ -112,7 +120,12 @@ export default function Home() {
         <EmptyStateMissingBudget />
       ) : (
         <>
-          <InstallPrompt />
+                <InstallPrompt />
+
+      <PageHeader
+        title="Slik ligger du an i dag"
+        subtitle={fmtDateShortNO(new Date().toISOString())}
+      />
 
           {/* ===== HOVEDKORT ===== */}
           <section className="section">

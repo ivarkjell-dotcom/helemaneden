@@ -366,3 +366,12 @@ button {
 
 .install-banner .actions { display: flex; gap: 8px; }
 .install-banner button.secondary { background: transparent; color: var(--text-secondary); }
+
+
+html[data-theme="dark"] {
+  --tab-bg: #020617;              /* mørk, men tydelig */
+  --tab-bg-active: #0f172a;       /* tydelig aktiv */
+  --tab-text: #cbd5f5;            /* MYE lysere enn før */
+  --tab-text-active: #ffffff;     /* krystallklar */
+  --tab-border: rgba(255,255,255,0.18);
+}
