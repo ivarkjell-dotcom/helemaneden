@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import InstallPrompt from "./components/InstallPrompt";
 import { IosInstallGuide } from "./components/IosInstallGuide";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "HeleMåneden",
@@ -29,10 +30,22 @@ export default function RootLayout({
 }) {
   return (
     <html lang="nb">
-      <IosInstallGuide />
       <body>
         {children}
+
         <InstallPrompt />
+        <IosInstallGuide />
+
+        <Script id="sw-register" strategy="afterInteractive">
+          {`
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js');
+              });
+            }
+          `}
+        </Script>
+
       </body>
     </html>
   );
