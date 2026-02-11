@@ -37,14 +37,18 @@ export default function RootLayout({
         <IosInstallGuide />
 
         <Script id="sw-register" strategy="afterInteractive">
-          {`
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', function () {
-                navigator.serviceWorker.register('/sw.js');
-              });
-            }
-          `}
-        </Script>
+  {`
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(function(reg) {
+          console.log('Service Worker registered', reg);
+        })
+        .catch(function(err) {
+          console.error('Service Worker registration failed:', err);
+        });
+    }
+  `}
+</Script>
 
       </body>
     </html>
