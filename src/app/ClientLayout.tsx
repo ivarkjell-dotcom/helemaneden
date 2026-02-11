@@ -14,15 +14,24 @@ export default function ClientLayout({
   const [menuOpen, setMenuOpen] = useState(false);
   const [hideUI, setHideUI] = useState(false);
 
-  useEffect(() => {
+    useEffect(() => {
     const check = () => {
       setHideUI(localStorage.getItem("hm_onboarding_active") === "true");
     };
 
     check();
+
+    const onToggle = () => check();
+
     window.addEventListener("storage", check);
-    return () => window.removeEventListener("storage", check);
+    document.addEventListener("hm_onboarding_toggle", onToggle);
+
+    return () => {
+      window.removeEventListener("storage", check);
+      document.removeEventListener("hm_onboarding_toggle", onToggle);
+    };
   }, []);
+
 
   return (
     <>

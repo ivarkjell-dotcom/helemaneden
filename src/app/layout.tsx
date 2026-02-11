@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import InstallPrompt from "./components/InstallPrompt";
+import { IosInstallGuide } from "./components/IosInstallGuide";
 
 export const metadata: Metadata = {
   title: "HeleMåneden",
@@ -28,6 +29,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="nb">
+      <IosInstallGuide />
       <body>
         {children}
         <InstallPrompt />

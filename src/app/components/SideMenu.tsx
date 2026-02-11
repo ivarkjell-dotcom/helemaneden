@@ -143,41 +143,21 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
 
         <nav style={{ display: "grid", gap: 12 }}>
           {/* Primary */}
-          <Link
-            href="/settings"
-            onClick={onClose}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              padding: "10px 8px",
-              borderRadius: 10,
-              textDecoration: "none",
-              color: "var(--text-primary)",
-              fontSize: 15,
-              fontWeight: 600,
-            }}
-          >
-            <Wallet {...iconProps} />
-            <span>Lønn og oppsett</span>
-          </Link>
+          
 
           {/* Settings */}
           <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                padding: "10px 8px",
-                fontSize: 13,
-                fontWeight: 700,
-                opacity: 0.7,
-              }}
-            >
-              <Settings {...iconProps} />
-              <span>Innstillinger</span>
-            </div>
+  <div
+    style={{
+      padding: "10px 8px",
+      fontSize: 13,
+      fontWeight: 700,
+      opacity: 0.7,
+    }}
+  >
+    <span>Personlige valg</span>
+  </div>
+
 
             <div style={{ paddingLeft: 32, display: "grid", gap: 14 }}>
               {/* Varsler */}
@@ -307,6 +287,24 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
                   Installering støttes ikke i denne nettleseren
                 </div>
               )}
+
+              <Link
+  href="/data-sikkerhet"
+  onClick={onClose}
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 12,
+    fontSize: 13,
+    textDecoration: "none",
+    color: "var(--text-primary)",
+    opacity: 0.8,
+  }}
+>
+  <span>Data og sikkerhet</span>
+</Link>
+
             </div>
           </div>
         </nav>

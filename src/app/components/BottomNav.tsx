@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Wallet, BarChart3 } from "lucide-react";
+import { Home, Settings, BarChart3 } from "lucide-react";
+
 
 export function BottomNav() {
   const pathname = usePathname();
@@ -47,9 +48,10 @@ export function BottomNav() {
       </Link>
 
       <Link href="/settings" style={linkStyle(isActive("/settings"))}>
-        <Wallet size={22} strokeWidth={1.8} />
-        <span>Lønn & oppsett</span>
-      </Link>
+  <Settings size={22} strokeWidth={1.8} />
+  <span>Oppsett</span>
+</Link>
+
 
       <Link href="/overview" style={linkStyle(isActive("/overview"))}>
         <BarChart3 size={22} strokeWidth={1.8} />

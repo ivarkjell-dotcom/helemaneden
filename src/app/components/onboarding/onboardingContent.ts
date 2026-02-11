@@ -1,56 +1,82 @@
+// src/app/components/onboarding/onboardingContent.ts
+
 export type OnboardingStep = {
+  key: string;
   title: string;
-  body: string[];
+  body: string[];       // kort tekst
+  moreTitle?: string;   // "Hva betyr ...?"
+  moreBody?: string[];  // mer-forklaring
 };
 
-export const standardOnboarding = {
-  durationText: "Tar ca. 2 min",
-  steps: [
-    {
-      title: "Velkommen til HeleMåneden",
-      body: [
-        "HeleMåneden hjelper deg å få oversikt over hva du trygt kan bruke på dagligvare og annet forbruk.",
-        "Én dag av gangen. Og gjennom hele uken og måneden.",
-        "Ingen budsjetter å følge slavisk. Bare rolig kontroll."
-      ]
-    },
-    {
-      title: "Slik fungerer HeleMåneden",
-      body: [
-        "Du legger inn saldo én gang om dagen.",
-        "Vi regner automatisk ut hvor mye du har igjen:",
-        "I dag. Denne uken. Denne måneden.",
-        "Du trenger ikke føre utgifter eller kategorier."
-      ]
-    },
-    {
-      title: "Før du starter",
-      body: [
-        "HeleMåneden fungerer best når kontoen du bruker her kun viser penger til daglig bruk.",
-        "Vi anbefaler derfor at faste regninger og forventede trekk ligger på en annen konto.",
-        "Da ser du alltid hva du faktisk kan bruke."
-      ]
-    }
-  ]
+export type OnboardingContent = {
+  durationText: string;
+  steps: OnboardingStep[];
 };
 
-export const pwaOnboarding = {
-  durationText: "Tar ca. 1 min",
+export const standardOnboarding: OnboardingContent = {
+  durationText: "Tar ca. 30 sek",
   steps: [
     {
-      title: "Bra valg",
-      body: [
-        "Du har lagt HeleMåneden på hjemskjermen.",
-        "Det gjør det enkelt å sjekke hva du trygt kan bruke i hverdagen."
-      ]
+      key: "what",
+      title: "Vær trygg hele måneden",
+      body: ["HeleMåneden gir deg et trygt beløp per dag."],
+      moreTitle: "Hva betyr “trygt beløp”?",
+      moreBody: [
+        "Det er beløpet du kan bruke uten å komme i minus før neste lønn.",
+        "Du registrerer saldo – appen regner ut resten.",
+      ],
     },
     {
-      title: "Slik får du mest nytte av appen",
-      body: [
-        "Appen fungerer best når kontoen du bruker her kun viser penger til daglig bruk.",
-        "Vi anbefaler derfor at faste regninger og forventede trekk ligger på en annen konto.",
-        "Da ser du alltid hva du faktisk kan bruke."
-      ]
-    }
-  ]
+      key: "for-whom",
+      title: "For deg som vil ha kontroll",
+      body: ["Ikke detaljbudsjettering. Bare klar retning."],
+      moreTitle: "Må jeg kategorisere alt?",
+      moreBody: [
+        "Nei. Du trenger ikke føre alt du kjøper.",
+        "Du registrerer bare saldo på brukskonto – det er nok.",
+      ],
+    },
+    {
+      key: "why",
+      title: "Fordi forbruk varierer",
+      body: ["Noen dager bruker vi mer. Andre mindre."],
+      moreTitle: "Hva skjer hvis jeg bruker mer enn plan?",
+      moreBody: [
+        "Appen justerer automatisk resten av perioden.",
+        "Da ser du hvordan “trygt å bruke” endrer seg dag for dag.",
+      ],
+    },
+    {
+      key: "how",
+      title: "Slik får du best effekt",
+      body: ["Betal faste regninger først. Bruk appen på resten."],
+      moreTitle: "Hvorfor anbefales dette?",
+      moreBody: [
+        "Sett av penger til faste utgifter (bolig, strøm, mobil, TV, osv.) på en egen konto tidlig i måneden.",
+        "Da jobber HeleMåneden kun med pengene du faktisk kan bruke på mat, klær, kaffe, gaver og annet forbruk.",
+        "Det gjør beregningen mer presis og trygg.",
+      ],
+    },
+    {
+      key: "when",
+      title: "Bruk den når det passer",
+      body: ["Oppdater saldo når du vil – jo oftere, jo mer presist."],
+      moreTitle: "Må jeg gjøre det hver dag?",
+      moreBody: [
+        "Nei. Men hver gang du oppdaterer, blir oversikten mer nøyaktig.",
+        "Og du blir mer bevisst uten å føre alt du kjøper.",
+      ],
+    },
+    {
+      key: "start",
+      title: "Kom i gang på 1–2 minutter",
+      body: ["Gjør dette først – så får du live utregninger med en gang:"],
+      // siste steg har ikke “les mer”
+    },
+  ],
+};
+
+export const pwaOnboarding: OnboardingContent = {
+  durationText: "Tar ca. 30 sek",
+  steps: standardOnboarding.steps,
 };

@@ -3,41 +3,35 @@ type PageHeaderProps = {
   subtitle?: string;
 };
 
-export function PageHeader({
-  title,
-  subtitle,
-}: {
-  title: string;
-  subtitle?: string;
-}) {
+export function PageHeader({ title, subtitle }: PageHeaderProps) {
   return (
-    <header
+    <div
       style={{
-        paddingTop: 16,
-        paddingBottom: 16,
+        paddingTop: 0,          // 🔼 nærmere TopBar
+        paddingBottom: 16,      // 🔽 kontrollert luft ned
       }}
     >
       <h1
         style={{
           fontSize: 20,
           fontWeight: 700,
-          margin: 0,
+          margin: 0,            // 🔥 viktig: fjerner default margin
         }}
       >
         {title}
       </h1>
 
       {subtitle && (
-        <p
+        <div
           style={{
-            marginTop: 6,
+            marginTop: 4,
             fontSize: 13,
-            opacity: 0.7,
+            opacity: 0.6,
           }}
         >
           {subtitle}
-        </p>
+        </div>
       )}
-    </header>
+    </div>
   );
 }

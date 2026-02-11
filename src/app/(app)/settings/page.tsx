@@ -47,22 +47,38 @@ export default function SettingsPage() {
         gap: 14,
       }}
     >
-      <h1 style={{ fontSize: 20, margin: 0 }}>Lønn og oppsett</h1>
+      <h1 style={{ fontSize: 20, margin: 0 }}>Oppsett</h1>
+      <span style={{ 
+    fontSize: 12, 
+    color: "#6b7280" 
+  }}>
+     Denne siden skal endres kun ved starten av ny måned.
+  </span>
 
       {/* Inputs */}
-      <label style={{ display: "grid", gap: 6 }}>
-        <span style={{ fontWeight: 700 }}>Saldo ved lønn (start)</span>
-        <input
-          inputMode="numeric"
-          value={s.monthStartBalance}
-          onChange={(e) =>
-            setS({ ...s, monthStartBalance: Number(e.target.value || 0) })
-          }
-        />
-      </label>
+      <label style={{ display: "grid", gap: 4 }}>
+  <span style={{ fontWeight: 700 }}>
+    Saldo på brukskonto ved starten av måneden
+  </span>
+
+  <input
+    inputMode="numeric"
+    value={s.monthStartBalance}
+    onChange={(e) =>
+      setS({ ...s, monthStartBalance: Number(e.target.value || 0) })
+    }
+  />
+
+  <span style={{ 
+    fontSize: 12, 
+    color: "#6b7280" 
+  }}>
+    Denne metoden fungerer best hvis faste regninger er betalt før du starter perioden.
+  </span>
+</label>
 
       <label style={{ display: "grid", gap: 6 }}>
-        <span style={{ fontWeight: 700 }}>Startdato (for lønnsperioden)</span>
+        <span style={{ fontWeight: 700 }}>Dato for lønn</span>
         <input
           type="date"
           value={s.monthStartDate}
@@ -73,7 +89,7 @@ export default function SettingsPage() {
       </label>
 
       <label style={{ display: "grid", gap: 6 }}>
-        <span style={{ fontWeight: 700 }}>Neste lønn</span>
+        <span style={{ fontWeight: 700 }}>Siste dag før neste lønn</span>
         <input
           type="date"
           value={s.nextPayday}
