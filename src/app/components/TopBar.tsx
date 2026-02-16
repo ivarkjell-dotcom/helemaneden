@@ -13,14 +13,15 @@ function todayISO() {
 function isValidBudget(settings: any) {
   if (!settings) return false;
 
-  const { monthStartBalance, monthStartDate, nextPayday } = settings;
+  const { monthStartDate, nextPayday } = settings;
 
-  if (!monthStartBalance || monthStartBalance <= 0) return false;
   if (!monthStartDate || !nextPayday) return false;
 
   const today = todayISO();
+
   return today >= monthStartDate && today < nextPayday;
 }
+
 
 type TopBarProps = {
   onMenuClick: () => void;
@@ -28,6 +29,7 @@ type TopBarProps = {
 
 export function TopBar({ onMenuClick }: TopBarProps) {
   const [showBanner, setShowBanner] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     try {
@@ -91,7 +93,8 @@ export function TopBar({ onMenuClick }: TopBarProps) {
       </div>
 
       {/* Banner ved manglende/utløpt lønnsperiode */}
-      {showBanner && (
+      {showBanner && !dismissed && (
+
         <Link
           href="/settings"
           style={{
@@ -118,6 +121,25 @@ export function TopBar({ onMenuClick }: TopBarProps) {
             <span>
               Ny lønnsperiode ikke satt – legg inn lønn og datoer
             </span>
+            <button
+  onClick={(e) => {
+  e.preventDefault();
+  e.stopPropagation();   // 👈 legg til denne
+  setDismissed(true);
+}}
+
+  style={{
+    marginLeft: "auto",
+    background: "transparent",
+    border: "none",
+    cursor: "pointer",
+    fontSize: 16,
+    color: "var(--text-secondary)",
+  }}
+>
+  ✕
+</button>
+
           </div>
         </Link>
       )}

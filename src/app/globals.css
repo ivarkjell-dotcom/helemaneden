@@ -21,10 +21,19 @@ a { color: inherit; }
 body {
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
     Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  background: var(--bg-app);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(47,125,95,0.06) 0%,
+      rgba(47,125,95,0.00) 60%
+    ),
+    var(--bg-app);
+
   color: var(--text-primary);
   padding-bottom: 72px;
 }
+
 
 /* Accessible focus ring */
 :focus-visible {
@@ -132,22 +141,10 @@ body {
   --progress-track: var(--bg-sunken);
   --progress-fill-ok: var(--ok);
   --progress-fill-warn: var(--warn);
-  --progress-fill-bad: var(--bad);
+  
 }
 
-/* Soft background wash (light only) */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(47,125,95,0.06) 0%,
-    rgba(47,125,95,0.00) 60%
-  );
-  pointer-events: none;
-  z-index: -1;
-}
+
 
 /* ---------- Dark ---------- */
 html[data-theme="dark"] {
@@ -253,6 +250,37 @@ html[data-theme="dark"] body::before { display: none; }
   gap: var(--space-s);
 }
 
+/* =========================================
+   📊 Oversikt – Base (Light + Dark)
+========================================= */
+
+.overview-card {
+  background: var(--bg-elev-1);
+  border: 2px solid var(--border-soft);
+  box-shadow: var(--shadow-1);
+  transition: all 0.2s ease;
+}
+
+.overview-card.current {
+  border: 2px solid var(--accent-safe);
+  box-shadow: 0 0 0 1px rgba(47,125,95,0.25);
+}
+
+/* Dager */
+.overview-day.future {
+  color: var(--text-primary);
+}
+
+.overview-day.past {
+  opacity: 0.45;
+}
+
+.overview-day.today {
+  color: var(--accent-safe);
+  font-weight: 700;
+}
+
+
 /* =========================================================
    ✅ Global elements: inputs, buttons, labels, icons
 ========================================================= */
@@ -337,12 +365,8 @@ button {
   height: 100%;
   width: 0%;
   border-radius: 999px;
-  background: var(--progress-fill-ok);
+  transition: width 0.4s ease;
 }
-
-.progress.ok > .fill { background: var(--progress-fill-ok); }
-.progress.warn > .fill { background: var(--progress-fill-warn); }
-.progress.bad > .fill { background: var(--progress-fill-bad); }
 
 /* =========================================================
    📲 Install banner
@@ -369,9 +393,47 @@ button {
 
 
 html[data-theme="dark"] {
-  --tab-bg: #020617;              /* mørk, men tydelig */
-  --tab-bg-active: #0f172a;       /* tydelig aktiv */
-  --tab-text: #cbd5f5;            /* MYE lysere enn før */
-  --tab-text-active: #ffffff;     /* krystallklar */
-  --tab-border: rgba(255,255,255,0.18);
+  --tab-bg: #0b1220;
+
+  /* 🔥 Lysere aktiv knapp */
+  --tab-bg-active: #1f2937; 
+
+  --tab-text: rgba(248,250,252,0.78);
+  --tab-text-active: #ffffff;
+
+  /* Litt tydeligere border */
+  --tab-border: rgba(255,255,255,0.28);
 }
+
+/* =========================================
+   📊 Oversikt – Dark mode styling
+========================================= */
+
+html[data-theme="dark"] .overview-card {
+  background: var(--bg-elev-1);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-1);
+}
+
+html[data-theme="dark"] .overview-card.current {
+  border: 2px solid var(--accent-safe);
+  box-shadow: 0 0 0 1px rgba(63,166,124,0.25);
+}
+
+/* Kommende dager */
+html[data-theme="dark"] .overview-day.future {
+  color: rgba(248,250,252,0.92);
+}
+
+/* Fortid */
+html[data-theme="dark"] .overview-day.past {
+  color: rgba(248,250,252,0.45);
+}
+
+/* I dag */
+html[data-theme="dark"] .overview-day.today {
+  color: var(--accent-safe);
+  font-weight: 700;
+}
+
+

@@ -1,45 +1,38 @@
+// /lib/types.ts
+// --------------------------------------------------
+// Globale typer for HeleMåneden budsjettmotor v1
+// --------------------------------------------------
+
 export type ISODate = `${number}-${number}-${number}`;
 
-export type BudgetSettings = {
-  monthStartBalance: number; // saldo ved lønn / start
-  monthStartDate: ISODate; // startdato (lønn)
-  nextPayday: ISODate; // neste lønn
+export type BudgetMode =
+  | "normal"
+  | "merged"        // ← lagt til (viktig!)
+  | "ahead"
+  | "behind"
+  | "on-track"
+  | "period-ended";
+
+export type BudgetInputs = {
+  monthStartDate: ISODate;
+  nextPayday: ISODate;
+  todayISO: ISODate;
+
+  monthStartBalance: number; // saldo ved lønn
+  currentBalance: number;    // saldo i dag
 };
 
-export type BudgetInputs = BudgetSettings & {
-  todayISO: ISODate; // stabilisert dato (klient)
-  currentBalance: number; // saldo i dag
-};
-
-export type WeekLabel = {
-  startISO: ISODate;
-  endISO: ISODate;
-  startText: string; // f.eks. "man"
-  endText: string; // f.eks. "søn"
-};
-
-export type BudgetPlan = {
-  totalDaysInPeriod: number;
-  plannedDaily: number;
-
-  // hvor langt vi er kommet
+export type BudgetResult = {
+  totalDays: number;
   daysElapsed: number;
-  remainingDaysTotal: number;
-  remainingDaysThisWeek: number;
+  remainingDays: number;
 
-  weekLabel: WeekLabel;
-
-  // plan for resterende dager i inneværende uke-segment
-  plannedWeekBudgetThisWeek: number;
-  expectedBalanceNow: number;
-  delta: number;
-};
-
-export type BudgetRecommendation = {
-  mode: "normal" | "merged";
+  plannedDaily: number;
   safeDaily: number;
   safeWeek: number;
-  horizonDays: number; // hvor mange dager safeDaily er fordelt over
-};
 
-export type BudgetResult = BudgetPlan & BudgetRecommendation;
+  expectedBalanceNow: number;
+  delta: number;
+
+  mode: BudgetMode;
+};

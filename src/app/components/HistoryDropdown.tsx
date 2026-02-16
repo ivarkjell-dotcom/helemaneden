@@ -18,11 +18,36 @@ function fmtKr(n: number) {
 function isSameMonth(a: ISODate, b: ISODate) {
   const da = new Date(a);
   const db = new Date(b);
-  return da.getFullYear() === db.getFullYear() && da.getMonth() === db.getMonth();
+  return (
+    da.getFullYear() === db.getFullYear() &&
+    da.getMonth() === db.getMonth()
+  );
 }
 
 function todayISO(): ISODate {
   return new Date().toISOString().slice(0, 10) as ISODate;
+}
+
+/* 🔽 Chevron icon (matcher stroke-fargene i appen) */
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="var(--icon-muted)"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      style={{
+        transform: open ? "rotate(180deg)" : "rotate(0deg)",
+        transition: "transform 0.2s ease",
+      }}
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  );
 }
 
 export function HistoryDropdown({
@@ -37,21 +62,22 @@ export function HistoryDropdown({
 
   if (!items || items.length === 0) return null;
 
-  const latest = items[0];
   const today = todayISO();
 
   const currentMonth = items.filter(
-  (i) =>
-    isSameMonth(i.date, today) &&
-    i.label !== "Startsaldo etter lønn"
-);
+    (i) =>
+      isSameMonth(i.date, today) &&
+      i.label !== "Startsaldo etter lønn"
+  );
 
-  const previousMonth = items.filter((i) => !isSameMonth(i.date, today));
+  const previousMonth = items.filter(
+    (i) => !isSameMonth(i.date, today)
+  );
 
   return (
     <div style={{ marginTop: 12 }}>
       {/* Header */}
-      <div
+      <button
         onClick={() => {
           setOpen(!open);
           setView("current");
@@ -59,20 +85,21 @@ export function HistoryDropdown({
         style={{
           display: "flex",
           justifyContent: "space-between",
+          alignItems: "center",
+          width: "100%",
+          background: "none",
+          border: "none",
+          padding: 0,
           cursor: "pointer",
           fontWeight: 700,
-          alignItems: "center",
+          fontSize: 14,
+          color: "var(--text-primary)",
         }}
         aria-expanded={open}
       >
-        <span>Saldo i dag</span>
-        <span style={{ fontSize: 18 }}>{open ? "⌃" : "⌄"}</span>
-      </div>
-
-      {/* Latest balance */}
-      <div style={{ fontSize: 22, fontWeight: 800, marginTop: 4 }}>
-        {fmtKr(latest.balance)} kr
-      </div>
+        <span>Saldohistorikk</span>
+        <Chevron open={open} />
+      </button>
 
       {open && (
         <div style={{ marginTop: 12 }}>
@@ -89,17 +116,19 @@ export function HistoryDropdown({
                 Denne måneden
               </div>
 
-              {/* ✅ Startsaldo etter lønn (samme som Saldo ved lønn start) */}
+              {/* Startsaldo */}
               <div
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
                   fontSize: 13,
                   padding: "6px 0",
-                  borderBottom: "1px solid rgba(0,0,0,0.05)",
+                  borderBottom: "1px solid var(--border-soft)",
                 }}
               >
-                <span style={{ fontWeight: 600 }}>Startsaldo etter lønn</span>
+                <span style={{ fontWeight: 600 }}>
+                  Startsaldo etter lønn
+                </span>
                 <span>{fmtKr(startBalance)} kr</span>
               </div>
 
@@ -111,7 +140,7 @@ export function HistoryDropdown({
                     justifyContent: "space-between",
                     fontSize: 13,
                     padding: "6px 0",
-                    borderBottom: "1px solid rgba(0,0,0,0.05)",
+                    borderBottom: "1px solid var(--border-soft)",
                   }}
                 >
                   <span style={{ fontWeight: 600 }}>
@@ -128,13 +157,13 @@ export function HistoryDropdown({
                     marginTop: 10,
                     background: "none",
                     border: "none",
-                    color: "#555",
+                    color: "var(--text-secondary)",
                     cursor: "pointer",
                     fontSize: 13,
                     padding: 0,
                   }}
                 >
-                  Forrige måned ▸
+                  Se forrige måned →
                 </button>
               )}
             </>
@@ -151,6 +180,7 @@ export function HistoryDropdown({
                   cursor: "pointer",
                   fontSize: 13,
                   padding: 0,
+                  color: "var(--text-secondary)",
                 }}
               >
                 ← Tilbake
@@ -175,7 +205,7 @@ export function HistoryDropdown({
                     justifyContent: "space-between",
                     fontSize: 13,
                     padding: "6px 0",
-                    borderBottom: "1px solid rgba(0,0,0,0.05)",
+                    borderBottom: "1px solid var(--border-soft)",
                   }}
                 >
                   <span style={{ fontWeight: 600 }}>

@@ -24,11 +24,15 @@ export function Tabs({
       style={{
         display: "grid",
         gridTemplateColumns: "1fr 1fr 1fr",
-        gap: 8,
+        gap: 6,
+        padding: 6,
+        borderRadius: 100,
+        background: "var(--tab-bg, rgba(0,0,0,0.04))",
       }}
     >
       {items.map((t) => {
         const active = t.key === value;
+
         return (
           <button
             key={t.key}
@@ -37,10 +41,19 @@ export function Tabs({
             onClick={() => onChange(t.key)}
             style={{
               padding: "10px 12px",
-              borderRadius: 12,
-              border: active ? "1px solid rgba(0,0,0,0.15)" : "1px solid rgba(0,0,0,0.08)",
-              background: active ? "rgba(0,0,0,0.04)" : "white",
-              fontWeight: 600,
+              borderRadius: 999,
+              border: active
+                ? "2px solid var(--accent-safe)"
+                : "2px solid transparent",
+              background: active
+                ? "var(--accent-soft)"
+                : "transparent",
+              color: active
+                ? "var(--text-primary)"
+                : "var(--text-secondary)",
+              fontWeight: active ? 700 : 600,
+              transition: "all 0.15s ease",
+              cursor: "pointer",
             }}
           >
             {t.label}

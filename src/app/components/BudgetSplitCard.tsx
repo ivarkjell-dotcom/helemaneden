@@ -32,38 +32,59 @@ export function BudgetSplitCard({
         gap: 12,
       }}
     >
-      {/* Topptekst */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "baseline",
-        }}
-      >
-        <div
-          style={{
-            fontSize: 14,
-            fontWeight: 600,
-            color: "var(--text-secondary)",
-          }}
-        >
-          {titleLeft}
-        </div>
+     {/* Topptekst */}
+<div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  }}
+>
+  {/* Venstre side */}
+  <div
+    style={{
+      fontSize: 14,
+      fontWeight: 600,
+      color: "var(--text-secondary)",
+    }}
+  >
+    {titleLeft}
+  </div>
 
-        {planned !== undefined && (
-          <div
-            style={{
-              fontSize: 13,
-              color: "var(--text-muted)",
-            }}
-          >
-            {titleRight}{" "}
-            <span style={{ fontWeight: 600 }}>
-              {fmtKr(planned)} kr
-            </span>
-          </div>
-        )}
-      </div>
+  {/* Høyre side */}
+  {planned !== undefined && (
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-end",   // 👈 dette gjør alt right aligned
+      textAlign: "right",       // 👈 sikrer tekstjustering
+      gap: 2,
+    }}
+  >
+    <span
+      style={{
+        fontSize: 13,
+        color: "var(--text-muted)",
+      }}
+    >
+      {titleRight}
+    </span>
+
+    <span
+      style={{
+        fontSize: 15,
+        fontWeight: 600,
+        color: "var(--text-secondary)",
+      }}
+    >
+      {fmtKr(planned)} kr
+    </span>
+  </div>
+)}
+</div>
+
+
 
       {/* Hovedbeløp */}
       <div

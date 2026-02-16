@@ -1,30 +1,40 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { buildOverviewDays, groupDaysIntoWeeks } from "../../lib/overview";
 import type { ISODate } from "../../lib/types";
 import { loadHistory } from "../../lib/history";
-import { WEEKDAY_NO } from "../../lib/constants";
+import { calculateWeek } from "../../lib/weekEngine";
 import { PageHeader } from "../../components/PageHeader";
 
 const SETTINGS_KEY = "hm_settings_v1";
-
-const WEEKDAYS = ["man", "tir", "ons", "tor", "fre", "lør", "søn"] as const;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 function todayISO(): ISODate {
   return new Date().toISOString().slice(0, 10) as ISODate;
 }
 
-function fmtKr(n: number) {
-  return new Intl.NumberFormat("nb-NO").format(Math.round(n));
+function toUTC(iso: ISODate) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
 }
 
-function fmtDateNO(iso: ISODate) {
-  return new Intl.DateTimeFormat("nb-NO", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  }).format(new Date(iso));
+function addDays(iso: ISODate, days: number): ISODate {
+  const d = toUTC(iso);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10) as ISODate;
+}
+
+function diffDays(a: ISODate, b: ISODate) {
+  return Math.floor((toUTC(b).getTime() - toUTC(a).getTime()) / MS_PER_DAY);
+}
+
+function weekdayIndex(iso: ISODate) {
+  const day = toUTC(iso).getUTCDay();
+  return day === 0 ? 6 : day - 1;
+}
+
+function fmtKr(n: number) {
+  return new Intl.NumberFormat("nb-NO").format(Math.floor(n));
 }
 
 export default function OverviewPage() {
@@ -33,182 +43,214 @@ export default function OverviewPage() {
   const [nextPayday, setNextPayday] = useState<ISODate>(todayISO());
   const [currentBalance, setCurrentBalance] = useState(0);
 
-  // 1️⃣ Last inn settings + historikk
   useEffect(() => {
     const raw = localStorage.getItem(SETTINGS_KEY);
-    let startBalance = 0;
 
     if (raw) {
       const s = JSON.parse(raw);
-      startBalance = s.monthStartBalance ?? 0;
-      setMonthStartBalance(startBalance);
+      setMonthStartBalance(s.monthStartBalance ?? 0);
       setMonthStartDate(s.monthStartDate ?? todayISO());
       setNextPayday(s.nextPayday ?? todayISO());
     }
 
     const history = loadHistory();
     const last = history[0];
-    setCurrentBalance(last ? last.balance : startBalance);
+    setCurrentBalance(last ? last.balance : 0);
   }, []);
 
-  // 2️⃣ Bygg dager
-  const overviewDays = useMemo(() => {
-    return buildOverviewDays({
-      startISO: monthStartDate,
-      endISO: nextPayday,
-      todayISO: todayISO(),
-      history: loadHistory(),
-      currentBalance,
-      budgetInputs: {
-        monthStartBalance,
-        currentBalance,
-        monthStartDate,
-        nextPayday,
-        todayISO: todayISO(),
-      },
-      weekdayLabels: [...WEEKDAY_NO],
-    });
-  }, [monthStartBalance, currentBalance, monthStartDate, nextPayday]);
-
-  const safeDaily =
-    overviewDays.find((d) => d.state === "today")?.amount ?? 0;
-
   const weeks = useMemo(() => {
-    return groupDaysIntoWeeks(overviewDays, safeDaily);
-  }, [overviewDays, safeDaily]);
+    const today = todayISO();
+    const remainingTotal = diffDays(today, nextPayday);
 
-  if (!overviewDays.length) {
-    return <main className="page">Laster oversikt…</main>;
-  }
+    const totalDaysPeriod = Math.max(
+      1,
+      diffDays(monthStartDate, nextPayday)
+    );
+
+    const plannedDaily = Math.floor(
+      monthStartBalance / totalDaysPeriod
+    );
+
+    const weekCalc = calculateWeek({
+      monthStartBalance,
+      plannedDaily,
+      currentBalance,
+      monthStartDate,
+      todayISO: today,
+      remainingDaysTotal: remainingTotal,
+    });
+
+    const firstMonday = addDays(
+      monthStartDate,
+      -weekdayIndex(monthStartDate)
+    );
+
+    const lastSunday = addDays(
+      nextPayday,
+      6 - weekdayIndex(nextPayday)
+    );
+
+    let cursor = firstMonday;
+    const result: any[] = [];
+
+    while (cursor <= lastSunday) {
+      const weekStart = cursor;
+      const weekEnd = addDays(weekStart, 6);
+
+      const isPastWeek = weekEnd < today;
+      const isCurrentWeek =
+        today >= weekStart && today <= weekEnd;
+
+      const days: any[] = [];
+      let weekSum = 0;
+      let hasActiveAmount = false;
+
+      const activeSpanEnd = addDays(
+        today,
+        weekCalc.spanDays - 1
+      );
+
+      for (let i = 0; i < 7; i++) {
+        const iso = addDays(weekStart, i);
+
+        const isPastDay = iso < today;
+        const outsidePeriod =
+          iso < monthStartDate || iso >= nextPayday;
+
+        let amount: number | null = null;
+
+        const insideActiveSpan =
+          iso >= today && iso <= activeSpanEnd;
+
+        if (!outsidePeriod && insideActiveSpan) {
+          amount = weekCalc.daily;
+        } else if (!outsidePeriod && iso > activeSpanEnd) {
+          amount = plannedDaily;
+        }
+
+        if (amount !== null) {
+          weekSum += amount;
+          hasActiveAmount = true;
+        }
+
+        days.push({
+          iso,
+          isPastDay,
+          outsidePeriod,
+          isToday: iso === today,
+          amount,
+        });
+      }
+
+      result.push({
+        weekStart,
+        isPastWeek,
+        isCurrentWeek,
+        days,
+        weekSum,
+        hasActiveAmount,
+      });
+
+      cursor = addDays(cursor, 7);
+    }
+
+    return result;
+  }, [
+    monthStartBalance,
+    monthStartDate,
+    nextPayday,
+    currentBalance,
+  ]);
 
   return (
-    <main className="page" style={{ maxWidth: 520, margin: "0 auto" }}>
-      <section className="section">
-        {/* 🔒 Felles sidetittel */}
-        <PageHeader
-          title="Oversikt"
-          subtitle={`Oppdatert: ${fmtDateNO(todayISO())}`}
-        />
+    <main style={{ maxWidth: 520, margin: "0 auto", padding: 16 }}>
+      <PageHeader
+        title="Oversikt"
+        subtitle="Slik motoren regner fremover"
+      />
 
-        {/* Uker side ved side */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-            gap: 16,
-          }}
-        >
-          {weeks.map((week, i) => {
-            const isCurrentWeek = week.days.some(
-              (d) => d.state === "today"
-            );
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 16,
+          marginTop: 16,
+        }}
+      >
+        {weeks.map((week, i) => (
+          <div
+            key={i}
+            className={`overview-card ${
+              week.isCurrentWeek ? "current" : ""
+            }`}
+            style={{
+              borderRadius: 16,
+              padding: 16,
+            }}
+          >
+            <div style={{ fontWeight: 700, marginBottom: 8 }}>
+              Uke {i + 1}
+            </div>
 
-            return (
+            {week.days.map((day: any, idx: number) => (
               <div
-                key={week.weekStartISO}
+                key={idx}
+                className={`overview-day ${
+                  day.isToday
+                    ? "today"
+                    : day.isPastDay
+                    ? "past"
+                    : "future"
+                }`}
                 style={{
-                  border: isCurrentWeek
-                    ? "2px solid #22C55E"
-                    : "1px solid rgba(0,0,0,0.06)",
-                  borderRadius: 14,
-                  padding: 14,
-                  background: "#fff",
-
-                  display: "grid",
-                  gridTemplateRows: "auto 1fr auto",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: day.isToday ? 16 : 14,
                 }}
               >
-                {/* Uke-header */}
-                <div style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 15, fontWeight: 700 }}>
-                    Uke {i + 1}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 12,
-                      opacity: 0.6,
-                      marginTop: 2,
-                    }}
-                  >
-                    {fmtDateNO(week.weekStartISO)} –{" "}
-                    {fmtDateNO(week.weekEndISO)}
-                  </div>
-                </div>
+                <span>
+                  {new Date(day.iso).getUTCDate()}.
+                </span>
 
-                {/* Dager: fast man–søn */}
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "36px 1fr",
-                    rowGap: 6,
-                    columnGap: 8,
-                  }}
-                >
-                  {WEEKDAYS.map((label) => {
-                    const d = week.days.find(
-                      (day) => day.weekday === label
-                    );
-
-                    return (
-                      <div key={label} style={{ display: "contents" }}>
-                        {/* Ukedag */}
-                        <div
-                          style={{
-                            fontSize: 13,
-                            opacity: d ? 1 : 0.25,
-                            color:
-                              d?.state === "today"
-                                ? "#22C55E"
-                                : d?.state === "past"
-                                ? "#9CA3AF"
-                                : "#1E3A8A",
-                            fontWeight:
-                              d?.state === "today" ? 600 : 400,
-                          }}
-                        >
-                          {label}
-                        </div>
-
-                        {/* Beløp */}
-                        <div
-                          style={{
-                            textAlign: "right",
-                            fontSize: 14,
-                            color:
-                              d?.state === "today"
-                                ? "#22C55E"
-                                : d?.state === "past"
-                                ? "#9CA3AF"
-                                : "#1E3A8A",
-                            fontWeight:
-                              d?.state === "today" ? 600 : 400,
-                          }}
-                        >
-                          {d ? `${fmtKr(d.amount)} kr` : ""}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Uke-sum – alltid nederst */}
-                <div
-                  style={{
-                    marginTop: 10,
-                    paddingTop: 8,
-                    borderTop:
-                      "1px dashed rgba(0,0,0,0.08)",
-                    fontSize: 14,
-                    fontWeight: 500,
-                  }}
-                >
-                  Trygt denne uken: {fmtKr(week.safeWeek)} kr
-                </div>
+                <span>
+                  {day.outsidePeriod || day.isPastDay
+                    ? "-"
+                    : day.amount !== null
+                    ? `${fmtKr(day.amount)} kr`
+                    : "-"}
+                </span>
               </div>
-            );
-          })}
-        </div>
-      </section>
+            ))}
+
+            {week.hasActiveAmount && (
+              <div
+                style={{
+                  marginTop: 10,
+                  paddingTop: 10,
+                  borderTop: "1px dashed var(--border-soft)",
+                  fontWeight: 700,
+                  fontSize: 14,
+                }}
+              >
+                Trygt denne uken: {fmtKr(week.weekSum)} kr
+              </div>
+            )}
+
+            {week.isPastWeek && (
+              <div
+                style={{
+                  marginTop: 8,
+                  fontSize: 12,
+                  opacity: 0.5,
+                  fontStyle: "italic",
+                }}
+              >
+                Endt uke
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </main>
   );
 }

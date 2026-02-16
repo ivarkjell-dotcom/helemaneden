@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 type Props = {
   label: string;
@@ -17,28 +18,9 @@ function clamp(n: number, min = 0, max = 1) {
 /* ℹ️ Lite info-ikon */
 function InfoIcon() {
   return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-    >
-      <circle
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="var(--icon-muted)"
-        strokeWidth="2"
-      />
-      <line
-        x1="12"
-        y1="10"
-        x2="12"
-        y2="16"
-        stroke="var(--icon-muted)"
-        strokeWidth="2"
-      />
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" stroke="var(--icon-muted)" strokeWidth="2" />
+      <line x1="12" y1="10" x2="12" y2="16" stroke="var(--icon-muted)" strokeWidth="2" />
       <circle cx="12" cy="7" r="1.2" fill="var(--icon-muted)" />
     </svg>
   );
@@ -51,29 +33,117 @@ export function PlanProgressBar({
   planUsed,
   showInfo = false,
 }: Props) {
-  const progress = max > 0 ? clamp(used / max) : 0;
+  // Sørger for at used aldri blir negativ
+  const safeUsed = Math.max(0, used);
+
+  const progress = max > 0 ? clamp(safeUsed / max) : 0;
   const planProgress =
-    planUsed !== undefined && max > 0
-      ? clamp(planUsed / max)
-      : null;
+    planUsed !== undefined && max > 0 ? clamp(planUsed / max) : null;
 
   const [open, setOpen] = useState(false);
+  const [portalReady, setPortalReady] = useState(false);
+
+  const iconRef = useRef<HTMLButtonElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
 
-  /* Lukk tooltip ved klikk utenfor */
+  useEffect(() => setPortalReady(true), []);
+
+  /* Lukk ved klikk utenfor + ESC */
   useEffect(() => {
+    if (!open) return;
+
     function handleClick(e: MouseEvent) {
-      if (
-        tooltipRef.current &&
-        !tooltipRef.current.contains(e.target as Node)
-      ) {
-        setOpen(false);
-      }
+      const target = e.target as Node;
+      if (tooltipRef.current?.contains(target)) return;
+      if (iconRef.current?.contains(target)) return;
+      setOpen(false);
     }
 
-    if (open) document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKey);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
   }, [open]);
+
+  /* Tooltip-posisjon */
+  const tooltipPos = useMemo(() => {
+    if (!open || !iconRef.current) return null;
+
+    const rect = iconRef.current.getBoundingClientRect();
+
+    return {
+      top: rect.top + rect.height / 2,
+      left: rect.right + 8,
+    };
+  }, [open]);
+
+  const tooltip =
+    portalReady && open && tooltipPos
+      ? createPortal(
+          <>
+            <div
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 99998,
+                background: "transparent",
+              }}
+            />
+
+            <div
+              ref={tooltipRef}
+              style={{
+                position: "fixed",
+                top: tooltipPos.top,
+                left: tooltipPos.left,
+                transform: "translateY(-50%)",
+                zIndex: 99999,
+                backgroundColor: "#ffffff",
+                borderRadius: 18,
+                padding: 18,
+                boxShadow: "0 30px 70px rgba(0,0,0,0.25)",
+                border: "1px solid rgba(0,0,0,0.08)",
+                fontSize: 14,
+                lineHeight: 1.5,
+                maxWidth: 340,
+                width: "min(340px, calc(100vw - 32px))",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  left: -10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  width: 0,
+                  height: 0,
+                  borderTop: "10px solid transparent",
+                  borderBottom: "10px solid transparent",
+                  borderRight: "10px solid #ffffff",
+                }}
+              />
+
+              <div style={{ fontWeight: 700, marginBottom: 8 }}>
+                Pilen viser jevnt forbruk
+              </div>
+
+              <div>
+                Fyll viser hvor mye du faktisk har brukt.
+                Pilen viser hvor du burde vært nå hvis forbruket
+                er jevnt fordelt i perioden.
+              </div>
+            </div>
+          </>,
+          document.body
+        )
+      : null;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -82,7 +152,7 @@ export function PlanProgressBar({
         style={{
           display: "flex",
           alignItems: "center",
-          gap: 6,
+          gap: 8,
           fontSize: 13,
           fontWeight: 600,
           color: "var(--text-secondary)",
@@ -91,103 +161,56 @@ export function PlanProgressBar({
         <span>{label}</span>
 
         {showInfo && (
-          <div style={{ position: "relative" }} ref={tooltipRef}>
-            <button
-              type="button"
-              aria-label="Forklaring"
-              aria-expanded={open}
-              onClick={() => setOpen((v) => !v)}
-              style={{
-                border: "none",
-                background: "none",
-                padding: 2,
-                cursor: "pointer",
-              }}
-            >
-              <InfoIcon />
-            </button>
-
-            {open && (
-              <div
-                role="tooltip"
-                style={{
-                  position: "absolute",
-                  top: "calc(100% + 8px)",
-                  right: 0,
-                  width: 240,
-                  padding: 12,
-                  borderRadius: 12,
-                  background: "var(--tooltip-bg)",
-                  color: "var(--text-primary)",
-                  border: "1px solid var(--border-soft)",
-                  boxShadow: "var(--shadow-elevated)",
-                  fontSize: 12,
-                  lineHeight: 1.4,
-                  zIndex: 1000,
-                }}
-              >
-                <strong>Pilen viser jevnt forbruk</strong>
-                <p style={{ marginTop: 6 }}>
-                  Fyll viser hvor mye du faktisk har brukt.
-                  Pilen viser hvor du burde vært nå hvis forbruket
-                  er jevnt fordelt i perioden.
-                </p>
-              </div>
-            )}
-          </div>
+          <button
+            ref={iconRef}
+            onClick={() => setOpen((o) => !o)}
+            style={{
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <InfoIcon />
+          </button>
         )}
       </div>
 
-      {/* Progress wrapper (tillater pil over baren) */}
-      <div
-        style={{
-          position: "relative",
-          paddingTop: 14, // plass til pil
-        }}
-      >
-        {/* 🔺 Pil – jevnt forbruk */}
+      {/* Progress */}
+      <div style={{ position: "relative", paddingTop: 14 }}>
         {showInfo && planProgress !== null && (
           <div
-  style={{
-    position: "absolute",
-    left: `${planProgress * 100}%`,
-    top: 0,
-    transform: "translateX(-50%)",
-    width: 0,
-    height: 0,
-    borderLeft: "7px solid transparent",
-    borderRight: "7px solid transparent",
-    borderTop: "10px solid var(--border-strong)", // 👈 peker NED
-  }}
-  aria-hidden
-/>
-
+            style={{
+              position: "absolute",
+              left: `${planProgress * 100}%`,
+              top: 0,
+              transform: "translateX(-50%)",
+              width: 0,
+              height: 0,
+              borderLeft: "7px solid transparent",
+              borderRight: "7px solid transparent",
+              borderTop: "10px solid var(--border-strong)",
+            }}
+          />
         )}
 
-        {/* Selve progresjonsstripen */}
         <div className="progress">
           <div
             className="fill"
             style={{
               width: `${progress * 100}%`,
-              transition: "width 0.4s ease",
+              background:
+                safeUsed > 0
+                  ? "#F59E0B"  // 🟡 Gul
+                  : "#2F7D5F", // 🟢 Grønn
             }}
           />
         </div>
       </div>
 
-      {/* Forklaring under baren */}
-      {showInfo && (
-        <div
-          style={{
-            fontSize: 12,
-            color: "var(--text-muted)",
-          }}
-        >
-          Pilen viser et jevnt forbruk.
-          Større kjøp tidligere i perioden kan gi lavere saldo nå, uten at det betyr at noe er galt.
-        </div>
-      )}
+      {tooltip}
     </div>
   );
 }
