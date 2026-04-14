@@ -6,6 +6,7 @@ type Props = {
   actual: number;
   planned?: number;
   deltaLabel?: string;
+  compact?: boolean;
 };
 
 function fmtKr(n: number) {
@@ -18,13 +19,14 @@ export function BudgetSplitCard({
   actual,
   planned,
   deltaLabel,
+  compact = false,
 }: Props) {
   return (
     <div
       style={{
         background: "var(--bg-card)",
         borderRadius: 20,
-        padding: "24px 24px 20px",
+        padding: compact ? "16px" : "24px 24px 20px",
         border: "1px solid var(--border-soft)",
         boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
         display: "flex",
@@ -89,7 +91,7 @@ export function BudgetSplitCard({
       {/* Hovedbeløp */}
       <div
         style={{
-          fontSize: 40,
+          fontSize: compact ? 26 : 40,
           fontWeight: 800,
           letterSpacing: "-0.02em",
           color: "var(--accent-safe)",

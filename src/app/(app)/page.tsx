@@ -316,11 +316,7 @@ export default function Home() {
                   planned={result.plannedDaily}
                 />
 
-                <PlanProgressBar
-                  label="Forbruk i forhold til plan"
-                  used={result.plannedDaily - weekResult.daily}
-                  max={result.plannedDaily}
-                />
+                
               </>
             )}
 
@@ -333,15 +329,7 @@ export default function Home() {
                   planned={result.plannedDaily * 7}
                 />
 
-                <PlanProgressBar
-                  label="Forbruk denne uken"
-                  used={
-                    (result.plannedDaily * 7) -
-                    (weekResult.daily * weekResult.spanDays)
-                  }
-                  max={result.plannedDaily * 7}
-                  showInfo
-                />
+                
               </>
             )}
 
@@ -354,12 +342,7 @@ export default function Home() {
                   planned={monthStartBalance}
                 />
 
-                <PlanProgressBar
-                  label="Forbruk denne måneden"
-                  used={monthStartBalance - lastSavedBalance}
-                  max={monthStartBalance}
-                  showInfo
-                />
+                
               </>
             )}
           </div>
