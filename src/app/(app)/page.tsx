@@ -11,7 +11,6 @@ import type { ISODate } from "../lib/types";
 import { PageHeader } from "../components/PageHeader";
 import { Tabs } from "../components/Tabs";
 import { BudgetSplitCard } from "../components/BudgetSplitCard";
-import { PlanProgressBar } from "../components/PlanProgressBar";
 import { HistoryDropdown } from "../components/HistoryDropdown";
 import { addHistoryEntry, loadHistory, type BalanceEntry } from "../lib/history";
 
@@ -59,10 +58,7 @@ function InputInfoTooltip() {
   }, [open]);
 
   return (
-    <div
-      ref={wrapperRef}
-      style={{ position: "relative", display: "inline-flex" }}
-    >
+    <div ref={wrapperRef} style={{ position: "relative", display: "inline-flex" }}>
       <button
         onClick={() => setOpen((o) => !o)}
         style={{
@@ -74,14 +70,7 @@ function InputInfoTooltip() {
           alignItems: "center",
         }}
       >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="var(--icon-muted)"
-          strokeWidth="2"
-        >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon-muted)" strokeWidth="2">
           <circle cx="12" cy="12" r="10" />
           <line x1="12" y1="10" x2="12" y2="16" />
           <circle cx="12" cy="7" r="1.2" fill="var(--icon-muted)" />
@@ -151,8 +140,7 @@ export default function Home() {
     const last = h[0];
     setCurrentBalance(last ? last.balance : startBalance);
 
-    const hasRedirected =
-      localStorage.getItem(HAS_REDIRECTED_KEY) === "true";
+    const hasRedirected = localStorage.getItem(HAS_REDIRECTED_KEY) === "true";
 
     const settingsMissing =
       !raw ||
@@ -166,7 +154,6 @@ export default function Home() {
     }
   }, [router]);
 
-  // 🔄 Oppdater dato automatisk
   useEffect(() => {
     const interval = setInterval(() => {
       setToday(todayISO());
@@ -187,9 +174,7 @@ export default function Home() {
 
   const lastSavedBalance = history[0]?.balance ?? currentBalance;
 
-  const alreadyUpdatedToday = history.some(
-    (h) => h.date === today
-  );
+  const alreadyUpdatedToday = history.some((h) => h.date === today);
 
   const result = useMemo(() => {
     return calculateBudget({
@@ -232,17 +217,66 @@ export default function Home() {
         subtitle={fmtDateShortNO(new Date().toISOString())}
       />
 
-      {/* ===== SALDO INPUT ===== */}
+      {/* HOVEDKORT */}
+      <section className="section">
+        <div className="card">
+          <div className="cardContent">
+            <Tabs value={activeTab} onChange={setActiveTab} />
+
+            {activeTab === "day" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <BudgetSplitCard
+                  titleLeft="Trygt i dag"
+                  actual={weekResult.daily}
+                />
+
+                <BudgetSplitCard
+                  titleLeft="Trygt denne uken"
+                  actual={weekResult.daily * weekResult.spanDays}
+                  compact
+                />
+              </div>
+            )}
+
+            {activeTab === "week" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <BudgetSplitCard
+                  titleLeft="Trygt denne uken"
+                  actual={weekResult.daily * weekResult.spanDays}
+                />
+
+                <BudgetSplitCard
+                  titleLeft="Trygt i dag"
+                  actual={weekResult.daily}
+                  compact
+                />
+              </div>
+            )}
+
+            {activeTab === "month" && (
+              <>
+                <BudgetSplitCard
+                  titleLeft="Igjen denne perioden"
+                  titleRight="Ved lønn"
+                  actual={lastSavedBalance}
+                  planned={monthStartBalance}
+                />
+
+                <BudgetSplitCard
+                  titleLeft="Ca per dag fremover"
+                  actual={result.safeDaily}
+                  compact
+                />
+              </>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* SALDO INPUT (FLYTTET NED) */}
       <section style={{ marginTop: 16 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              fontWeight: 700,
-            }}
-          >
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontWeight: 700 }}>
             <span>Saldo på brukskonto i dag</span>
             <InputInfoTooltip />
           </div>
@@ -271,92 +305,24 @@ export default function Home() {
               style={{
                 padding: "14px 16px",
                 borderRadius: 14,
-                background: alreadyUpdatedToday
-                  ? "var(--green-100)"
-                  : "var(--accent-safe)",
-                color: alreadyUpdatedToday
-                  ? "var(--green-700)"
-                  : "white",
+                background: alreadyUpdatedToday ? "var(--green-100)" : "var(--accent-safe)",
+                color: alreadyUpdatedToday ? "var(--green-700)" : "white",
                 fontWeight: 800,
-                border: alreadyUpdatedToday
-                  ? "1px solid var(--green-300)"
-                  : "none",
+                border: alreadyUpdatedToday ? "1px solid var(--green-300)" : "none",
                 cursor: "pointer",
               }}
             >
               {alreadyUpdatedToday ? "Oppdatert i dag ✓" : "Oppdater"}
             </button>
           </div>
-
-          {alreadyUpdatedToday && lastUpdatedTime && (
-            <div
-              style={{
-                fontSize: 12,
-                color: "var(--text-secondary)",
-              }}
-            >
-              Sist oppdatert kl {lastUpdatedTime}
-            </div>
-          )}
         </div>
       </section>
 
-      {/* ===== HOVEDKORT ===== */}
-      <section className="section">
-        <div className="card">
-          <div className="cardContent">
-            <Tabs value={activeTab} onChange={setActiveTab} />
-
-            {activeTab === "day" && (
-              <>
-                <BudgetSplitCard
-                  titleLeft="Trygt å bruke per dag"
-                  titleRight="Ved jevnt forbruk"
-                  actual={weekResult.daily}
-                  planned={result.plannedDaily}
-                />
-
-                
-              </>
-            )}
-
-            {activeTab === "week" && (
-              <>
-                <BudgetSplitCard
-                  titleLeft="Trygt å bruke i aktiv periode"
-                  titleRight="Ved jevnt forbruk"
-                  actual={weekResult.daily * weekResult.spanDays}
-                  planned={result.plannedDaily * 7}
-                />
-
-                
-              </>
-            )}
-
-            {activeTab === "month" && (
-              <>
-                <BudgetSplitCard
-                  titleLeft="Igjen denne måneden"
-                  titleRight="Sum ved lønn"
-                  actual={lastSavedBalance}
-                  planned={monthStartBalance}
-                />
-
-                
-              </>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== HISTORIKK ===== */}
+      {/* HISTORIKK */}
       <section className="section sectionDivider">
         <div className="card">
           <div className="cardContent">
-            <HistoryDropdown
-              items={history}
-              startBalance={monthStartBalance}
-            />
+            <HistoryDropdown items={history} startBalance={monthStartBalance} />
             <DailyReminder />
           </div>
         </div>
