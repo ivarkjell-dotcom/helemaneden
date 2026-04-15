@@ -5,10 +5,12 @@ import type { BalanceEntry } from "../lib/history";
 import type { ISODate } from "../lib/types";
 
 function fmtDate(iso: ISODate) {
-  return new Intl.DateTimeFormat("nb-NO", {
-    day: "2-digit",
-    month: "2-digit",
-  }).format(new Date(iso));
+  const d = new Date(iso);
+
+  const day = d.getDate();
+  const month = d.getMonth() + 1;
+
+  return `${String(day).padStart(2, "0")}.${String(month).padStart(2, "0")}`;
 }
 
 function fmtKr(n: number) {
@@ -26,28 +28,6 @@ function isSameMonth(a: ISODate, b: ISODate) {
 
 function todayISO(): ISODate {
   return new Date().toISOString().slice(0, 10) as ISODate;
-}
-
-/* 🔽 Chevron icon (matcher stroke-fargene i appen) */
-function Chevron({ open }: { open: boolean }) {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="var(--icon-muted)"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{
-        transform: open ? "rotate(180deg)" : "rotate(0deg)",
-        transition: "transform 0.2s ease",
-      }}
-    >
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
-  );
 }
 
 export function HistoryDropdown({
@@ -74,62 +54,101 @@ export function HistoryDropdown({
     (i) => !isSameMonth(i.date, today)
   );
 
+  const latest = items[0] ?? { balance: 0, date: todayISO() };
+
   return (
     <div style={{ marginTop: 12 }}>
-      {/* Header */}
+      {/* HEADER */}
       <button
         onClick={() => {
           setOpen(!open);
           setView("current");
         }}
         style={{
+          width: "100%",
+          background: "transparent", // 👈 fjernet kort-følelse
+          border: "none", // 👈 fjernet ramme
+          padding: "12px 0",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          width: "100%",
-          background: "none",
-          border: "none",
-          padding: 0,
           cursor: "pointer",
-          fontWeight: 700,
-          fontSize: 14,
-          color: "var(--text-primary)",
         }}
-        aria-expanded={open}
       >
-        <span>Saldohistorikk</span>
-        <Chevron open={open} />
+        {/* Venstre */}
+        <div>
+          <div style={{ fontSize: 12, opacity: 0.6, textAlign: "left" }}>
+            Sist oppdatert
+          </div>
+
+          <div style={{ fontWeight: 700 }}>
+            {fmtDate(latest.date)}
+            {latest.time && (
+              <span style={{ fontSize: 12, opacity: 0.6, marginLeft: 14 }}>
+                kl {latest.time}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Høyre */}
+        <div style={{ textAlign: "right" }}>
+          <div style={{ fontSize: 12, opacity: 0.6 }}>
+            Saldo konto
+          </div>
+
+          <div style={{ fontWeight: 700 }}>
+            {fmtKr(latest.balance)} kr
+          </div>
+        </div>
+
+        {/* Chevron */}
+        <div
+          style={{
+            marginLeft: 12,
+            width: 32,
+            height: 32,
+            borderRadius: 999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            stroke="#62AAC0"
+            fill="none"
+            strokeWidth="2"
+            style={{
+              transform: open ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "0.2s",
+            }}
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
       </button>
 
+      {/* DROPDOWN */}
       {open && (
         <div style={{ marginTop: 12 }}>
           {view === "current" && (
             <>
-              <div
-                style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  opacity: 0.7,
-                  marginBottom: 6,
-                }}
-              >
-                Denne måneden
+            <div
+  style={{
+    height: 1,
+    background: "rgba(0,0,0,0.08)",
+    margin: "16px 0",
+  }}
+/>
+              <div style={{ fontSize: 13, opacity: 0.6, marginBottom: 6 }}>
+                Denne perioden
               </div>
 
-              {/* Startsaldo */}
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: 13,
-                  padding: "6px 0",
-                  borderBottom: "1px solid var(--border-soft)",
-                }}
-              >
-                <span style={{ fontWeight: 600 }}>
-                  Startsaldo etter lønn
-                </span>
-                <span>{fmtKr(startBalance)} kr</span>
+              <div style={{ padding: "6px 0" }}>
+                <strong>Startsaldo</strong> {fmtKr(startBalance)} kr
               </div>
 
               {currentMonth.slice(0, 5).map((h, i) => (
@@ -140,12 +159,9 @@ export function HistoryDropdown({
                     justifyContent: "space-between",
                     fontSize: 13,
                     padding: "6px 0",
-                    borderBottom: "1px solid var(--border-soft)",
                   }}
                 >
-                  <span style={{ fontWeight: 600 }}>
-                    {h.label ?? fmtDate(h.date)}
-                  </span>
+                  <span>{h.label ?? fmtDate(h.date)}</span>
                   <span>{fmtKr(h.balance)} kr</span>
                 </div>
               ))}
@@ -157,13 +173,12 @@ export function HistoryDropdown({
                     marginTop: 10,
                     background: "none",
                     border: "none",
-                    color: "var(--text-secondary)",
                     cursor: "pointer",
                     fontSize: 13,
-                    padding: 0,
+                    opacity: 0.6,
                   }}
                 >
-                  Se forrige måned →
+                  Se forrige →
                 </button>
               )}
             </>
@@ -179,23 +194,11 @@ export function HistoryDropdown({
                   border: "none",
                   cursor: "pointer",
                   fontSize: 13,
-                  padding: 0,
-                  color: "var(--text-secondary)",
+                  opacity: 0.6,
                 }}
               >
                 ← Tilbake
               </button>
-
-              <div
-                style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  opacity: 0.7,
-                  marginBottom: 6,
-                }}
-              >
-                Forrige måned
-              </div>
 
               {previousMonth.slice(0, 10).map((h, i) => (
                 <div
@@ -205,12 +208,9 @@ export function HistoryDropdown({
                     justifyContent: "space-between",
                     fontSize: 13,
                     padding: "6px 0",
-                    borderBottom: "1px solid var(--border-soft)",
                   }}
                 >
-                  <span style={{ fontWeight: 600 }}>
-                    {h.label ?? fmtDate(h.date)}
-                  </span>
+                  <span>{h.label ?? fmtDate(h.date)}</span>
                   <span>{fmtKr(h.balance)} kr</span>
                 </div>
               ))}

@@ -88,7 +88,7 @@ export default function SettingsPage() {
             background: "#FEE2E2",
             color: "#991B1B",
             padding: 10,
-            borderRadius: 8,
+            borderRadius: 20,
             fontSize: 14,
           }}
         >
@@ -110,6 +110,12 @@ export default function SettingsPage() {
               monthStartBalance: Number(e.target.value || 0),
             })
           }
+          style={{
+  padding: 14,
+  borderRadius: 20,
+  border: "1px solid var(--border-soft)",
+  fontSize: 16,
+}}
         />
       </label>
 
@@ -126,6 +132,12 @@ export default function SettingsPage() {
               monthStartDate: e.target.value,
             })
           }
+          style={{
+  padding: 14,
+  borderRadius: 20,
+  border: "1px solid var(--border-soft)",
+  fontSize: 16,
+}}
         />
       </label>
 
@@ -142,6 +154,12 @@ export default function SettingsPage() {
               nextPayday: e.target.value,
             })
           }
+          style={{
+  padding: 14,
+  borderRadius: 20,
+  border: "1px solid var(--border-soft)",
+  fontSize: 16,
+}}
         />
       </label>
 
@@ -149,11 +167,11 @@ export default function SettingsPage() {
         onClick={save}
         disabled={!isChanged}
         style={{
-          background: isChanged ? "#15803D" : "#9CA3AF",
+          background: isChanged ? "#62AAC0" : "#9CA3AF",
           color: "#fff",
           border: "none",
           padding: "12px 16px",
-          borderRadius: 8,
+          borderRadius: 20,
           fontWeight: 600,
           cursor: isChanged ? "pointer" : "not-allowed",
           opacity: isChanged ? 1 : 0.7,

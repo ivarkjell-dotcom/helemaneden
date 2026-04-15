@@ -10,7 +10,6 @@ import { calculateBudget } from "../lib/budgetEngine";
 import type { ISODate } from "../lib/types";
 import { PageHeader } from "../components/PageHeader";
 import { Tabs } from "../components/Tabs";
-import { BudgetSplitCard } from "../components/BudgetSplitCard";
 import { HistoryDropdown } from "../components/HistoryDropdown";
 import { addHistoryEntry, loadHistory, type BalanceEntry } from "../lib/history";
 
@@ -38,7 +37,11 @@ function fmtDateShortNO(iso: string) {
   }).format(new Date(iso));
 }
 
-/* ========= TOOLTIP ========= */
+function fmtKr(n: number) {
+  return new Intl.NumberFormat("nb-NO").format(Math.round(n));
+}
+
+/* TOOLTIP */
 function InputInfoTooltip() {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -60,51 +63,65 @@ function InputInfoTooltip() {
   return (
     <div ref={wrapperRef} style={{ position: "relative", display: "inline-flex" }}>
       <button
-        onClick={() => setOpen((o) => !o)}
-        style={{
-          background: "transparent",
-          border: "none",
-          cursor: "pointer",
-          padding: 0,
-          display: "flex",
-          alignItems: "center",
-        }}
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon-muted)" strokeWidth="2">
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="10" x2="12" y2="16" />
-          <circle cx="12" cy="7" r="1.2" fill="var(--icon-muted)" />
-        </svg>
-      </button>
+  onClick={() => setOpen((o) => !o)}
+  style={{
+  background: "transparent",
+  border: "none",        // 👈 fjerner ringen
+  outline: "none",       // 👈 fjerner focus-ring
+  boxShadow: "none",
+  padding: 0,
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+}}
+>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="var(--icon-muted)"
+    strokeWidth="2"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <line x1="12" y1="10" x2="12" y2="16" />
+    <circle cx="12" cy="7" r="1" fill="var(--icon-muted)" />
+  </svg>
+</button>
 
       {open && (
-        <div
-          style={{
-            position: "absolute",
-            top: "120%",
-            right: 0,
-            width: "min(300px, 85vw)",
-            background: "var(--bg-elev-1)",
-            color: "var(--text-primary)",
-            padding: 16,
-            borderRadius: 16,
-            boxShadow: "var(--shadow-2)",
-            border: "1px solid var(--border-soft)",
-            fontSize: 13,
-            lineHeight: 1.6,
-            zIndex: 10000,
-          }}
-        >
-          Legg inn saldo fra brukskonto hver dag.
-          Da ser du hva som er trygt å bruke –
-          uten å gå tom før måneden er over.
-        </div>
-      )}
+  <div
+    style={{
+      position: "absolute",
+      top: "120%",
+      right: 0,
+
+      background: "#fff",                  // 👈 hvit bakgrunn
+      color: "var(--text-primary)",
+
+      padding: "14px 16px",
+      borderRadius: 20,
+
+      boxShadow: "0 12px 30px rgba(0,0,0,0.15)", // 👈 flytende følelse
+      border: "1px solid rgba(0,0,0,0.06)",
+
+      fontSize: 13,
+      lineHeight: 1.5,
+
+      width: "min(280px, 80vw)",
+
+      zIndex: 10000,
+    }}
+  >
+    Legg inn saldo fra brukskonto hver dag.
+    Da ser du hva som er trygt å bruke uten å gå tom før perioden er over.
+  </div>
+)}
     </div>
   );
 }
 
-/* ========= HOME ========= */
+/* HOME */
 export default function Home() {
   const router = useRouter();
 
@@ -157,23 +174,26 @@ export default function Home() {
   useEffect(() => {
     const interval = setInterval(() => {
       setToday(todayISO());
-    }, 60 * 1000);
-
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
 
   function saveBalanceNow() {
-    const value = Number(balanceInput) || 0;
-    const updated = addHistoryEntry(value);
+  const value = Number(balanceInput) || 0;
 
-    setHistory(updated);
-    setCurrentBalance(value);
-    setBalanceInput("");
-    setLastUpdatedTime(nowTimeNO());
-  }
+  const updated = addHistoryEntry({
+    balance: value,
+    date: today,
+    time: nowTimeNO(),
+  });
+
+  setHistory(updated);
+  setCurrentBalance(value);
+  setBalanceInput("");
+  setLastUpdatedTime(nowTimeNO());
+}
 
   const lastSavedBalance = history[0]?.balance ?? currentBalance;
-
   const alreadyUpdatedToday = history.some((h) => h.date === today);
 
   const result = useMemo(() => {
@@ -195,21 +215,14 @@ export default function Home() {
       todayISO: today,
       remainingDaysTotal: result.remainingDays,
     });
-  }, [
-    monthStartBalance,
-    result.plannedDaily,
-    lastSavedBalance,
-    monthStartDate,
-    result.remainingDays,
-    today,
-  ]);
+  }, [monthStartBalance, result, lastSavedBalance, today]);
 
   if (!result || result.totalDays <= 0) {
     return <EmptyStateMissingBudget />;
   }
 
   return (
-    <main className="page" style={{ maxWidth: 520, margin: "0 auto" }}>
+    <main style={{ maxWidth: 520, margin: "0 auto" }}>
       <InstallPrompt />
 
       <PageHeader
@@ -218,85 +231,147 @@ export default function Home() {
       />
 
       {/* HOVEDKORT */}
-      <section className="section">
-        <div className="card">
-          <div className="cardContent">
-            <Tabs value={activeTab} onChange={setActiveTab} />
+      <section style={{ marginTop: 16 }}>
+        <div
+          style={{
+            background: "var(--bg-card)",
+            borderRadius: 20,
+            padding: 24,
+            border: "1px solid var(--border-soft)",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
+          }}
+        >
+          <Tabs value={activeTab} onChange={setActiveTab} />
 
+          <div style={{ marginTop: 20 }}>
             {activeTab === "day" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <BudgetSplitCard
-                  titleLeft="Trygt i dag"
-                  actual={weekResult.daily}
-                />
-
-                <BudgetSplitCard
-                  titleLeft="Trygt denne uken"
-                  actual={weekResult.daily * weekResult.spanDays}
-                  compact
-                />
-              </div>
+              <>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>
+                    Trygt i dag
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 40,
+                      fontWeight: 800,
+                      color: "#62AAC0",
+                    }}
+                  >
+                    {fmtKr(weekResult.daily)} kr
+                  </div>
+                </div>
+                <div
+                 style={{
+                 height: 1,
+                 background: "rgba(0,0,0,0.08)",
+                 margin: "16px 0",
+               }}
+                  />
+                <div style={{ marginTop: 16 }}>
+                  <div style={{ fontSize: 13, opacity: 0.7 }}>
+                    Trygt denne uken
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 22,
+                      color: "#C07862",
+                    }}
+                  >
+                    {fmtKr(weekResult.daily * weekResult.spanDays)} kr
+                  </div>
+                </div>
+              </>
             )}
 
             {activeTab === "week" && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <BudgetSplitCard
-                  titleLeft="Trygt denne uken"
-                  actual={weekResult.daily * weekResult.spanDays}
-                />
-
-                <BudgetSplitCard
-                  titleLeft="Trygt i dag"
-                  actual={weekResult.daily}
-                  compact
-                />
-              </div>
+              <>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>
+                    Trygt denne uken
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 40,
+                      fontWeight: 800,
+                      color: "#C07862",
+                    }}
+                  >
+                    {fmtKr(weekResult.daily * weekResult.spanDays)} kr
+                  </div>
+                </div>
+                 <div
+  style={{
+    height: 1,
+    background: "rgba(0,0,0,0.08)",
+    margin: "16px 0",
+  }}
+/>
+                <div style={{ marginTop: 16 }}>
+                  <div style={{ fontSize: 13, opacity: 0.7 }}>
+                    Trygt i dag
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 22,
+                      color: "#62AAC0",
+                    }}
+                  >
+                    {fmtKr(weekResult.daily)} kr
+                  </div>
+                </div>
+              </>
             )}
 
             {activeTab === "month" && (
               <>
-                <BudgetSplitCard
-                  titleLeft="Igjen denne perioden"
-                  titleRight="Ved lønn"
-                  actual={lastSavedBalance}
-                  planned={monthStartBalance}
-                />
-
-                <BudgetSplitCard
-                  titleLeft="Ca per dag fremover"
-                  actual={result.safeDaily}
-                  compact
-                />
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>
+                    Igjen denne perioden
+                  </div>
+                  <div style={{ fontSize: 40, fontWeight: 800 }}>
+                    {fmtKr(lastSavedBalance)} kr
+                  </div>
+                </div>
+                 <div
+  style={{
+    height: 1,
+    background: "rgba(0,0,0,0.08)",
+    margin: "16px 0",
+  }}
+/>
+                <div style={{ marginTop: 16 }}>
+                  <div style={{ fontSize: 13, opacity: 0.7 }}>
+                    Jevnt fordelt per dags dato
+                  </div>
+                  <div style={{ fontSize: 22 }}>
+                    {fmtKr(result.safeDaily)} kr
+                  </div>
+                </div>
               </>
             )}
           </div>
         </div>
       </section>
 
-      {/* SALDO INPUT (FLYTTET NED) */}
+      {/* SALDO INPUT */}
       <section style={{ marginTop: 16 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontWeight: 700 }}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span>Saldo på brukskonto i dag</span>
             <InputInfoTooltip />
           </div>
 
           <div style={{ display: "flex", gap: 10 }}>
             <input
-              inputMode="numeric"
-              placeholder="Skriv saldo…"
               value={balanceInput}
               onChange={(e) => setBalanceInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") saveBalanceNow();
-              }}
+              placeholder="Skriv saldo…"
               style={{
                 flex: 1,
                 padding: 14,
-                borderRadius: 14,
+                borderRadius: 20,
                 border: "1px solid var(--border-soft)",
                 fontSize: 16,
-                background: "var(--bg-elev-1)",
               }}
             />
 
@@ -304,29 +379,55 @@ export default function Home() {
               onClick={saveBalanceNow}
               style={{
                 padding: "14px 16px",
-                borderRadius: 14,
-                background: alreadyUpdatedToday ? "var(--green-100)" : "var(--accent-safe)",
-                color: alreadyUpdatedToday ? "var(--green-700)" : "white",
-                fontWeight: 800,
-                border: alreadyUpdatedToday ? "1px solid var(--green-300)" : "none",
+                borderRadius: 20,
+                background: alreadyUpdatedToday
+                  ? "rgba(0,0,0,0.05)"
+                  : "#62AAC0",
+                color: alreadyUpdatedToday ? "#666" : "white",
+                fontWeight: 700,
+                border: "none",
                 cursor: "pointer",
+                boxShadow: alreadyUpdatedToday
+                  ? "none"
+                  : "0 2px 8px rgba(98,170,192,0.3)",
               }}
             >
-              {alreadyUpdatedToday ? "Oppdatert i dag ✓" : "Oppdater"}
+              {alreadyUpdatedToday ? "Oppdatert ✓" : "Oppdater"}
             </button>
           </div>
         </div>
       </section>
 
       {/* HISTORIKK */}
-      <section className="section sectionDivider">
-        <div className="card">
-          <div className="cardContent">
-            <HistoryDropdown items={history} startBalance={monthStartBalance} />
-            <DailyReminder />
-          </div>
-        </div>
-      </section>
+<section style={{ marginTop: 16 }}>
+  <div
+    style={{
+      background: "var(--bg-card)",
+      borderRadius: 20,
+      padding: 20,
+      border: "1px solid var(--border-soft)",
+      boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
+    }}
+  >
+    {/* 👇 Samme stil som saldo-tittel */}
+    <div
+      style={{
+        fontSize: 14,
+        fontWeight: 700,
+        marginBottom: 12,
+      }}
+    >
+      Saldohistorikk
+    </div>
+
+    <HistoryDropdown
+      items={history}
+      startBalance={monthStartBalance}
+    />
+  </div>
+
+  <DailyReminder />
+</section>
     </main>
   );
 }

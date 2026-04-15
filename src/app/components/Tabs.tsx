@@ -18,48 +18,68 @@ export function Tabs({
   ];
 
   return (
-    <div
-      role="tablist"
-      aria-label="Visning"
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr 1fr",
-        gap: 6,
-        padding: 6,
-        borderRadius: 100,
-        background: "var(--tab-bg, rgba(0,0,0,0.04))",
-      }}
-    >
-      {items.map((t) => {
-        const active = t.key === value;
+    <>
+      {/* Tabs */}
+      <div
+        role="tablist"
+        style={{
+          display: "flex",
+          alignItems: "flex-end",
+          gap: 6,
+          paddingLeft: 4,
+        }}
+      >
+        {items.map((t) => {
+          const active = t.key === value;
 
-        return (
-          <button
-            key={t.key}
-            role="tab"
-            aria-selected={active}
-            onClick={() => onChange(t.key)}
-            style={{
-              padding: "10px 12px",
-              borderRadius: 999,
-              border: active
-                ? "2px solid var(--accent-safe)"
-                : "2px solid transparent",
-              background: active
-                ? "var(--accent-soft)"
-                : "transparent",
-              color: active
-                ? "var(--text-primary)"
-                : "var(--text-secondary)",
-              fontWeight: active ? 700 : 600,
-              transition: "all 0.15s ease",
-              cursor: "pointer",
-            }}
-          >
-            {t.label}
-          </button>
-        );
-      })}
-    </div>
+          return (
+            <button
+              key={t.key}
+              onClick={() => onChange(t.key)}
+              style={{
+                flex: 1,
+                padding: "12px 10px",
+                cursor: "pointer",
+
+                /* ✨ FORM */
+                borderRadius: "20px 20px 0 0",
+
+                /* ✨ BORDER (kun topp + sider når aktiv) */
+                borderTop: active ? "1.5px solid rgba(0,0,0,0.06)" : "none",
+borderLeft: active ? "1.5px solid rgba(0,0,0,0.06)" : "none",
+borderRight: active ? "1.5px solid rgba(0,0,0,0.06)" : "none",
+                borderBottom: "none",
+
+                /* ✨ BAKGRUNN */
+                background: active
+                  ? "var(--bg-card)"
+                  : "rgba(0,0,0,0.03)",
+
+                position: "relative",
+                zIndex: active ? 2 : 1,
+
+                /* ✨ TEKST */
+                color: active
+                  ? "#111"
+                  : "rgba(0,0,0,0.45)",
+
+                fontWeight: active ? 700 : 500,
+                fontSize: active ? 16 : 14,
+
+                /* ✨ LØFT */
+                transform: active ? "translateY(1px)" : "none",
+
+                boxShadow: "none",
+                transition: "all 0.18s ease",
+              }}
+            >
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
+
+      
+    </>
   );
 }

@@ -3,7 +3,8 @@ import type { ISODate } from "./types";
 export type BalanceEntry = {
   date: ISODate;
   balance: number;
-  label?: string; // 👈 ny (for startsaldo)
+  time?: string; // 👈 NY
+  label?: string;
 };
 
 const HISTORY_KEY = "hm_history_v1";
@@ -22,37 +23,42 @@ export function loadHistory(): BalanceEntry[] {
   }
 }
 
-export function addHistoryEntry(balance: number): BalanceEntry[] {
+export function addHistoryEntry(entry: {
+  balance: number;
+  date: ISODate;
+  time?: string;
+}): BalanceEntry[] {
   const history = loadHistory();
-  const today = todayISO();
+const today = entry.date;
 
-  // 🔹 Finn om det allerede finnes en post i dag
-  const existingIndex = history.findIndex((h) => h.date === today);
+// Finn eksisterende i dag
+const existingIndex = history.findIndex((h) => h.date === today);
 
-  let updated: BalanceEntry[];
+let updated: BalanceEntry[];
 
-  if (existingIndex >= 0) {
-    // A) Overskriv dagens verdi (ikke lag ny)
-    updated = [...history];
-    updated[existingIndex] = {
-      ...updated[existingIndex],
-      balance,
-    };
-  } else {
-    // B) Første dag = startsaldo
-    const isFirst = history.length === 0;
+if (existingIndex >= 0) {
+  // Oppdater eksisterende
+  updated = [...history];
+  updated[existingIndex] = {
+    ...updated[existingIndex],
+    balance: entry.balance,
+    time: entry.time,
+  };
+} else {
+  const isFirst = history.length === 0;
 
-    const entry: BalanceEntry = {
-      date: today,
-      balance,
-      label: isFirst ? "Startsaldo etter lønn" : undefined,
-    };
+  const newEntry: BalanceEntry = {
+    date: entry.date,
+    balance: entry.balance,
+    time: entry.time,
+    label: isFirst ? "Startsaldo etter lønn" : undefined,
+  };
 
-    updated = [entry, ...history];
-  }
+  updated = [newEntry, ...history];
+}
 
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
-  return updated;
+localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+return updated;
 }
 
 

@@ -8,6 +8,7 @@ import { PageHeader } from "../../components/PageHeader";
 
 const SETTINGS_KEY = "hm_settings_v1";
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const DAY_COLOR = "#62AAC0";
 
 function todayISO(): ISODate {
   return new Date().toISOString().slice(0, 10) as ISODate;
@@ -184,9 +185,15 @@ export default function OverviewPage() {
               week.isCurrentWeek ? "current" : ""
             }`}
             style={{
-              borderRadius: 16,
-              padding: 16,
-            }}
+  borderRadius: 20,
+  padding: 16,
+
+  border: week.isCurrentWeek
+    ? `2px solid ${DAY_COLOR}`
+    : "1px solid var(--border-soft)",
+
+
+}}
           >
             <div style={{ fontWeight: 700, marginBottom: 8 }}>
               Uke {i + 1}
@@ -203,14 +210,22 @@ export default function OverviewPage() {
                     : "future"
                 }`}
                 style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontSize: day.isToday ? 16 : 14,
-                }}
+  display: "flex",
+  justifyContent: "space-between",
+  fontSize: day.isToday ? 16 : 14,
+
+  color: day.isToday ? DAY_COLOR : undefined,
+  fontWeight: day.isToday ? 600 : 400,
+}}
               >
-                <span>
-                  {new Date(day.iso).getUTCDate()}.
-                </span>
+                <span
+  style={{
+    color: day.isToday ? DAY_COLOR : undefined,
+    fontWeight: day.isToday ? 700 : 400,
+  }}
+>
+  {new Date(day.iso).getUTCDate()}.
+</span>
 
                 <span>
                   {day.outsidePeriod || day.isPastDay
