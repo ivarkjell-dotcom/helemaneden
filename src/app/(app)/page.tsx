@@ -222,7 +222,13 @@ export default function Home() {
   }
 
   return (
-    <main style={{ maxWidth: 520, margin: "0 auto" }}>
+    <main
+  style={{
+    maxWidth: 520,
+    margin: "0 auto",
+    padding: 16, // 👈 DETTE ER DET VIKTIGE
+  }}
+>
       <InstallPrompt />
 
       <PageHeader
