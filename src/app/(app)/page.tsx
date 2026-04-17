@@ -12,6 +12,8 @@ import { PageHeader } from "../components/PageHeader";
 import { Tabs } from "../components/Tabs";
 import { HistoryDropdown } from "../components/HistoryDropdown";
 import { addHistoryEntry, loadHistory, type BalanceEntry } from "../lib/history";
+import { incrementOpens } from "../lib/metrics";
+import { incrementInputs } from "../lib/metrics";
 
 type TabKey = "day" | "week" | "month";
 
@@ -172,6 +174,13 @@ export default function Home() {
   }, [router]);
 
   useEffect(() => {
+  if (!sessionStorage.getItem("hm_opened")) {
+    incrementOpens();
+    sessionStorage.setItem("hm_opened", "true");
+  }
+}, []);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       setToday(todayISO());
     }, 60000);
@@ -191,6 +200,8 @@ export default function Home() {
   setCurrentBalance(value);
   setBalanceInput("");
   setLastUpdatedTime(nowTimeNO());
+
+  incrementInputs();
 }
 
   const lastSavedBalance = history[0]?.balance ?? currentBalance;
