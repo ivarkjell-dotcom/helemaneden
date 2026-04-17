@@ -1,5 +1,7 @@
 "use client";
 
+import { getMergeMessage } from "../lib/getMergeMessage";
+
 type Props = {
   titleLeft: string;
   titleRight?: string;
@@ -7,6 +9,7 @@ type Props = {
   planned?: number;
   deltaLabel?: string;
   compact?: boolean;
+  weeksMerged?: number; // 👈 NY
 };
 
 function fmtKr(n: number) {
@@ -20,18 +23,19 @@ export function BudgetSplitCard({
   planned,
   deltaLabel,
   compact = false,
+  weeksMerged, // 👈 NY
 }: Props) {
   return (
     <div
       style={{
-        background: compact ? "rgba(0,0,0,0.02)" : "var(--bg-card)", // 👈 NY
+        background: compact ? "rgba(0,0,0,0.02)" : "var(--bg-card)",
         borderRadius: 20,
-        padding: compact ? "14px 16px" : "24px 24px 20px", // 👈 JUSTERT
+        padding: compact ? "14px 16px" : "24px 24px 20px",
         border: "1px solid var(--border-soft)",
-        boxShadow: compact ? "none" : "0 10px 30px rgba(0,0,0,0.06)", // 👈 VIKTIG
+        boxShadow: compact ? "none" : "0 10px 30px rgba(0,0,0,0.06)",
         display: "flex",
         flexDirection: "column",
-        gap: 10, // litt strammere
+        gap: 10,
       }}
     >
       {/* Topptekst */}
@@ -42,10 +46,9 @@ export function BudgetSplitCard({
           alignItems: "flex-start",
         }}
       >
-        {/* Venstre */}
         <div
           style={{
-            fontSize: compact ? 13 : 14, // 👈 litt mindre i compact
+            fontSize: compact ? 13 : 14,
             fontWeight: 600,
             color: "var(--text-secondary)",
           }}
@@ -53,7 +56,6 @@ export function BudgetSplitCard({
           {titleLeft}
         </div>
 
-        {/* Høyre */}
         {planned !== undefined && (
           <div
             style={{
@@ -64,12 +66,7 @@ export function BudgetSplitCard({
               gap: 2,
             }}
           >
-            <span
-              style={{
-                fontSize: 12,
-                color: "var(--text-muted)",
-              }}
-            >
+            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
               {titleRight}
             </span>
 
@@ -89,7 +86,7 @@ export function BudgetSplitCard({
       {/* Beløp */}
       <div
         style={{
-          fontSize: compact ? 22 : 40, // 👈 TYDELIG forskjell
+          fontSize: compact ? 22 : 40,
           fontWeight: 800,
           letterSpacing: "-0.02em",
           color: "var(--accent-safe)",
@@ -99,7 +96,7 @@ export function BudgetSplitCard({
         {fmtKr(actual)} kr
       </div>
 
-      {/* Forklaring */}
+      {/* Forklaring (eksisterende) */}
       {deltaLabel && (
         <div
           style={{
@@ -109,6 +106,20 @@ export function BudgetSplitCard({
           }}
         >
           {deltaLabel}
+        </div>
+      )}
+
+      {/* 👇 NY: merge-melding */}
+      {weeksMerged && getMergeMessage(weeksMerged) && (
+        <div
+          style={{
+            fontSize: 13,
+            color: "#6B7280",
+            lineHeight: 1.4,
+            marginTop: 4,
+          }}
+        >
+          {getMergeMessage(weeksMerged)}
         </div>
       )}
     </div>

@@ -1,6 +1,9 @@
 "use client";
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
 export default function DataSikkerhetPage() {
+  const router = useRouter();
   return (
     <main
       style={{
@@ -10,6 +13,21 @@ export default function DataSikkerhetPage() {
         lineHeight: 1.6,
       }}
     >
+
+<div style={{ marginBottom: 12 }}>
+  <button
+    onClick={() => router.back()}
+    style={{
+      background: "transparent",
+      border: "none",
+      padding: 0,
+      cursor: "pointer",
+    }}
+  >
+    <ArrowLeft size={22} />
+  </button>
+</div>
+
       <h1 style={{ fontSize: 22, marginBottom: 16 }}>
         Data og sikkerhet
       </h1>

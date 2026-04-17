@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { getMetrics } from "../../lib/metrics";
 
 export default function MetricsPage() {
-  const [metrics, setMetrics] = useState({ opens: 0, inputs: 0 });
+  const [metrics, setMetrics] = useState({ opens: 0, inputs: 0, days: 0 });
+
+  const router = useRouter();
 
   useEffect(() => {
     setMetrics(getMetrics());
@@ -12,6 +16,19 @@ export default function MetricsPage() {
 
   return (
     <main style={{ maxWidth: 520, margin: "0 auto", padding: 16 }}>
+        <div style={{ marginBottom: 12 }}>
+  <button
+    onClick={() => router.back()}
+    style={{
+      background: "transparent",
+      border: "none",
+      padding: 0,
+      cursor: "pointer",
+    }}
+  >
+    <ArrowLeft size={22} />
+  </button>
+</div>
       <h1 style={{ fontSize: 20, fontWeight: 700 }}>
         Din bruk
       </h1>
@@ -42,6 +59,16 @@ export default function MetricsPage() {
             {metrics.inputs}
           </div>
         </div>
+      
+
+        <div style={{ marginTop: 16 }}>
+  <div style={{ fontSize: 13, opacity: 0.7 }}>
+    Antall dager brukt
+  </div>
+  <div style={{ fontSize: 32, fontWeight: 800 }}>
+    {metrics.days}
+  </div>
+</div>
       </section>
 
       <section style={{ marginTop: 20 }}>

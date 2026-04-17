@@ -289,6 +289,23 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
               )}
 
               <Link
+  href="/metrics"
+  onClick={onClose}
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 12,
+    fontSize: 13,
+    textDecoration: "none",
+    color: "var(--text-primary)",
+    opacity: 0.8,
+  }}
+>
+  <span>Din bruk i testen</span>
+</Link>
+
+              <Link
   href="/data-sikkerhet"
   onClick={onClose}
   style={{

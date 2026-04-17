@@ -1,6 +1,7 @@
 "use client";
 
 import { calculateWeek } from "../lib/weekEngine";
+import { getMergeMessage } from "../lib/getMergeMessage";
 import { EmptyStateMissingBudget } from "../components/EmptyStateMissingBudget";
 import DailyReminder from "../components/DailyReminder";
 import InstallPrompt from "../components/InstallPrompt";
@@ -14,6 +15,7 @@ import { HistoryDropdown } from "../components/HistoryDropdown";
 import { addHistoryEntry, loadHistory, type BalanceEntry } from "../lib/history";
 import { incrementOpens } from "../lib/metrics";
 import { incrementInputs } from "../lib/metrics";
+
 
 type TabKey = "day" | "week" | "month";
 
@@ -250,15 +252,27 @@ export default function Home() {
       {/* HOVEDKORT */}
       <section style={{ marginTop: 16 }}>
         <div
-          style={{
-            background: "var(--bg-card)",
-            borderRadius: 20,
-            padding: 24,
-            border: "1px solid var(--border-soft)",
-            boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
-          }}
-        >
-          <Tabs value={activeTab} onChange={setActiveTab} />
+  style={{
+    background: "var(--bg-card)",
+    borderRadius: 20,
+    padding: "12px 24px 24px",
+    border: "1px solid var(--border-soft)",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
+
+    position: "relative",
+    zIndex: 1,            // 👈 NY (kortet bak)
+  }}
+>
+          <div
+  style={{
+    position: "relative",
+    zIndex: 5, // 👈 løfter tabbaren foran kortet
+
+    margin: "-28px -24px 8px -24px", // 👈 trekker den opp riktig
+  }}
+>
+  <Tabs value={activeTab} onChange={setActiveTab} />
+</div>
 
           <div style={{ marginTop: 20 }}>
             {activeTab === "day" && (
@@ -277,6 +291,18 @@ export default function Home() {
                     {fmtKr(weekResult.daily)} kr
                   </div>
                 </div>
+                {weekResult.weeksAttached > 0 && (
+  <div
+    style={{
+      marginTop: 6,
+      fontSize: 13,
+      color: "#6B7280",
+      lineHeight: 1.4,
+    }}
+  >
+    {getMergeMessage(weekResult.weeksAttached)}
+  </div>
+)}
                 <div
                  style={{
                  height: 1,
@@ -297,6 +323,7 @@ export default function Home() {
                     {fmtKr(weekResult.daily * weekResult.spanDays)} kr
                   </div>
                 </div>
+                
               </>
             )}
 
@@ -316,6 +343,18 @@ export default function Home() {
                     {fmtKr(weekResult.daily * weekResult.spanDays)} kr
                   </div>
                 </div>
+                {weekResult.weeksAttached > 0 && (
+  <div
+    style={{
+      marginTop: 6,
+      fontSize: 13,
+      color: "#6B7280",
+      lineHeight: 1.4,
+    }}
+  >
+    {getMergeMessage(weekResult.weeksAttached)}
+  </div>
+)}
                  <div
   style={{
     height: 1,

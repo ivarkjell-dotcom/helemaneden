@@ -18,68 +18,63 @@ export function Tabs({
   ];
 
   return (
-    <>
-      {/* Tabs */}
-      <div
-        role="tablist"
-        style={{
-          display: "flex",
-          alignItems: "flex-end",
-          gap: 6,
-          paddingLeft: 4,
-        }}
-      >
-        {items.map((t) => {
-          const active = t.key === value;
+    <div
+      role="tablist"
+      style={{
+        display: "flex",
+        alignItems: "flex-end",
+        width: "100%",
+      }}
+    >
+      {items.map((t, index) => {
+        const active = t.key === value;
 
-          return (
-            <button
-              key={t.key}
-              onClick={() => onChange(t.key)}
-              style={{
-                flex: 1,
-                padding: "12px 10px",
-                cursor: "pointer",
+        return (
+          <button
+            key={t.key}
+            onClick={() => onChange(t.key)}
+            style={{
+              flex: 1,
+              padding: "14px 10px",
+              cursor: "pointer",
 
-                /* ✨ FORM */
-                borderRadius: "20px 20px 0 0",
+              borderRadius: "18px 18px 0 0",
 
-                /* ✨ BORDER (kun topp + sider når aktiv) */
-                borderTop: active ? "1.5px solid rgba(0,0,0,0.06)" : "none",
-borderLeft: active ? "1.5px solid rgba(0,0,0,0.06)" : "none",
-borderRight: active ? "1.5px solid rgba(0,0,0,0.06)" : "none",
-                borderBottom: "none",
+              /* 🔥 Overlap */
+              marginLeft: index === 0 ? 0 : -14,
 
-                /* ✨ BAKGRUNN */
-                background: active
-                  ? "var(--bg-card)"
-                  : "rgba(0,0,0,0.03)",
+              /* 🔥 Border (ingen shorthand) */
+              borderTop: "1px solid rgba(0,0,0,0.08)",
+              borderLeft: "1px solid rgba(0,0,0,0.08)",
+              borderRight: "1px solid rgba(0,0,0,0.08)",
+              borderBottom: active
+                ? "none"
+                : "1px solid rgba(0,0,0,0.08)",
 
-                position: "relative",
-                zIndex: active ? 2 : 1,
+              /* 🔥 Bakgrunn */
+              background: active
+                ? "var(--bg-card)"
+                : "#F3F4F6",
 
-                /* ✨ TEKST */
-                color: active
-                  ? "#111"
-                  : "rgba(0,0,0,0.45)",
+              /* 🔥 STACKING (helt stabil nå) */
+              position: "relative",
+              zIndex: active ? 999 : 100 - index,
 
-                fontWeight: active ? 700 : 500,
-                fontSize: active ? 16 : 14,
+              /* 🔥 Løft */
+              marginTop: active ? 0 : 6,
 
-                /* ✨ LØFT */
-                transform: active ? "translateY(1px)" : "none",
+              /* Tekst */
+              color: active ? "#111" : "rgba(0,0,0,0.5)",
+              fontWeight: active ? 700 : 500,
+              fontSize: active ? 16 : 14,
 
-                boxShadow: "none",
-                transition: "all 0.18s ease",
-              }}
-            >
-              {t.label}
-            </button>
-          );
-        })}
-      </div>
-
-      
-    </>
+              transition: "all 0.18s ease",
+            }}
+          >
+            {t.label}
+          </button>
+        );
+      })}
+    </div>
   );
 }
