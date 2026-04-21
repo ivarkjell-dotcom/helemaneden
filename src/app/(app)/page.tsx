@@ -256,19 +256,24 @@ export default function Home() {
     background: "var(--bg-card)",
     borderRadius: 20,
     padding: "12px 24px 24px",
-    border: "1px solid var(--border-soft)",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
 
+    /* 🔥 Del opp border */
+    borderLeft: "1px solid var(--border-soft)",
+borderRight: "1px solid var(--border-soft)",
+borderBottom: "1px solid var(--border-soft)",
+borderTop: "none", // 🔥 VIKTIG
+
+    boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
     position: "relative",
-    zIndex: 1,            // 👈 NY (kortet bak)
+    zIndex: 1,
   }}
 >
           <div
   style={{
     position: "relative",
-    zIndex: 5, // 👈 løfter tabbaren foran kortet
+    zIndex: 5,
 
-    margin: "-28px -24px 8px -24px", // 👈 trekker den opp riktig
+    margin: "-36px -24px -2px -24px", // 🔥 tightere
   }}
 >
   <Tabs value={activeTab} onChange={setActiveTab} />

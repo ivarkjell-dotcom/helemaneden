@@ -22,11 +22,13 @@ export function Tabs({
       role="tablist"
       style={{
         display: "flex",
-        alignItems: "flex-end",
         width: "100%",
+        gap: 8,
+        position: "relative",
+        zIndex: 2,
       }}
     >
-      {items.map((t, index) => {
+      {items.map((t) => {
         const active = t.key === value;
 
         return (
@@ -40,35 +42,43 @@ export function Tabs({
 
               borderRadius: "18px 18px 0 0",
 
-              /* 🔥 Overlap */
-              marginLeft: index === 0 ? 0 : -14,
+              /* 🎨 FARGE */
+              background: active
+                ? "var(--bg-app)"   // samme som kort
+                : "var(--bg-sunken)",
 
-              /* 🔥 Border (ingen shorthand) */
-              borderTop: "1px solid rgba(0,0,0,0.08)",
-              borderLeft: "1px solid rgba(0,0,0,0.08)",
-              borderRight: "1px solid rgba(0,0,0,0.08)",
+              /* 🧱 BORDER (ingen shorthand!) */
+              borderTop: "1px solid var(--border-soft)",
+              borderLeft: "1px solid var(--border-soft)",
+              borderRight: "1px solid var(--border-soft)",
               borderBottom: active
                 ? "none"
-                : "1px solid rgba(0,0,0,0.08)",
+                : "1px solid var(--border-soft)",
 
-              /* 🔥 Bakgrunn */
-              background: active
-                ? "var(--bg-card)"
-                : "#F3F4F6",
-
-              /* 🔥 STACKING (helt stabil nå) */
+              /* 🧠 LAG */
               position: "relative",
-              zIndex: active ? 999 : 100 - index,
+              zIndex: active ? 10 : 1,
 
-              /* 🔥 Løft */
-              marginTop: active ? 0 : 6,
+              /* 🔥 SMELT INN I KORT */
+              marginBottom: active ? -2 : 0,
 
-              /* Tekst */
-              color: active ? "#111" : "rgba(0,0,0,0.5)",
+              /* ✍️ TEKST */
+              color: active
+                ? "var(--text-primary)"
+                : "var(--text-muted)",
+
               fontWeight: active ? 700 : 500,
-              fontSize: active ? 16 : 14,
+              fontSize: 14,
 
-              transition: "all 0.18s ease",
+              transition: "all 0.15s ease",
+
+              /* 🔧 PIXEL FINJUST (valgfri men bra) */
+              transform:
+                t.key === "day"
+                  ? "translateX(-1px)"
+                  : t.key === "month"
+                  ? "translateX(1px)"
+                  : "none",
             }}
           >
             {t.label}
