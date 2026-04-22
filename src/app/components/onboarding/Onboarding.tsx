@@ -148,77 +148,17 @@ export default function Onboarding() {
             animation: "hmFade 220ms ease-out",
           }}
         >
-          <h2 style={{ marginBottom: 10, fontSize: 22, lineHeight: 1.15 }}>
+          <h2 style={{ marginBottom: 14, fontSize: 24, lineHeight: 1.2 }}>
             {current.title}
           </h2>
 
           {current.body.map((line, i) => (
-            <p key={i} style={{ opacity: 0.9, color: textMuted, marginTop: 6 }}>
+            <p key={i} style={{ opacity: 0.9, color: textMuted, marginTop: 8, lineHeight: 1.5 }}>
               {line}
             </p>
           ))}
 
-          {/* Les mer */}
-          {current.moreTitle && current.moreBody?.length ? (
-            <div style={{ marginTop: 16 }}>
-              <button
-                onClick={() => setExpanded((v) => !v)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  background: "transparent",
-                  border: "none",
-                  padding: 0,
-                  cursor: "pointer",
-                  color: "rgba(0,0,0,0.85)",
-                  fontWeight: 700,
-                }}
-              >
-                <span
-                  style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: 999,
-                    border: "1px solid rgba(0,0,0,0.14)",
-                    display: "grid",
-                    placeItems: "center",
-                  }}
-                >
-                  {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </span>
-                <span style={{ fontSize: 14 }}>{expanded ? "Skjul" : "Les mer"}</span>
-              </button>
-
-              {expanded ? (
-                <div
-                  style={{
-                    marginTop: 10,
-                    padding: 12,
-                    borderRadius: 12,
-                    background: "rgba(0,0,0,0.03)",
-                    border: "1px solid rgba(0,0,0,0.06)",
-                  }}
-                >
-                  <div style={{ fontWeight: 800, marginBottom: 6 }}>
-                    {current.moreTitle}
-                  </div>
-                  {current.moreBody.map((line, i) => (
-                    <p
-                      key={i}
-                      style={{
-                        marginTop: 6,
-                        color: textMuted,
-                        lineHeight: 1.45,
-                      }}
-                    >
-                      {line}
-                    </p>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          ) : null}
+          
 
           {/* Siste steg: “Kom i gang” */}
           {isLast ? (
