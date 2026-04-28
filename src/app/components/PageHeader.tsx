@@ -22,6 +22,7 @@ export function PageHeader({ title, subtitle, onBack }: PageHeaderProps) {
             background: "none",
             border: "none",
             padding: 4,
+            marginLeft: -4,
             marginBottom: 8,
             cursor: "pointer",
           }}

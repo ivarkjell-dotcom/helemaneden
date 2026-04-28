@@ -92,7 +92,7 @@ export default function SettingsPage() {
 
       <InfoTooltip title="Hva skal jeg legge inn?">
   <p><strong>Saldo ved lønn</strong><br />
-  Pengene du har igjen etter faste utgifter, sparing og buffer.</p>
+  Pengene du har igjen etter satt av til faste utgifter, sparing og buffer.</p>
 
   <p style={{ marginTop: "8px" }}>
     <strong>Dato for lønn</strong><br />

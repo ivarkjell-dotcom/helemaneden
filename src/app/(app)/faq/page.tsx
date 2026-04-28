@@ -51,14 +51,32 @@ export default function FAQPage() {
   onBack={() => router.back()}
 />
       {/* FAQ */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {faqs.map((item, index) => (
           <div
             key={index}
             className="bg-card border border-border rounded-2xl p-4"
           >
-            <p className="font-medium mb-2">{item.q}</p>
-            <p className="text-sm opacity-80 leading-relaxed">{item.a}</p>
+            <p
+  style={{
+    fontSize: 15,
+    fontWeight: 700,
+    marginBottom: 4,
+  }}
+>
+  {item.q}
+</p>
+            <p
+  style={{
+    fontSize: 14,
+    opacity: 0.75,
+    lineHeight: 1.5,
+    marginTop: 6,
+  }}
+>
+  {item.a}
+</p>
+  
           </div>
         ))}
       </div>

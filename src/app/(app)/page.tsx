@@ -3,7 +3,6 @@
 import { calculateWeek } from "../lib/weekEngine";
 import { getMergeMessage } from "../lib/getMergeMessage";
 import { EmptyStateMissingBudget } from "../components/EmptyStateMissingBudget";
-import DailyReminder from "../components/DailyReminder";
 import InstallPrompt from "../components/InstallPrompt";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -140,6 +139,8 @@ export default function Home() {
   const [monthStartDate, setMonthStartDate] = useState<ISODate>(todayISO());
   const [nextPayday, setNextPayday] = useState<ISODate>(todayISO());
 
+
+  
   useEffect(() => {
     const raw = localStorage.getItem(SETTINGS_KEY);
 
@@ -495,7 +496,6 @@ borderTop: "none", // 🔥 VIKTIG
     />
   </div>
 
-  <DailyReminder />
 </section>
     </main>
   );
