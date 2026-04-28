@@ -17,15 +17,15 @@ export const standardOnboarding: OnboardingContent = {
   durationText: "Tar ca. 30 sek",
   steps: [
     {
-      key: "what",
-      title: "Vær trygg hele måneden",
-      body: ["HeleMåneden gir deg et trygt beløp per dag."],
-      moreTitle: "Hva betyr “trygt beløp”?",
-      moreBody: [
-        "Det er beløpet du kan bruke uten å komme i minus før neste lønn.",
-        "Du registrerer saldo – appen regner ut resten.",
-      ],
-    },
+  key: "what",
+  title: "Hva kan du bruke i dag?",
+  body: ["HeleMåneden gir deg et konkret svar."],
+  moreTitle: "Hva betyr “trygt å bruke”?",
+  moreBody: [
+    "Det er beløpet du kan bruke uten å gå tom før neste lønn.",
+    "Du legger inn saldo – appen regner resten.",
+  ],
+},
     {
       key: "for-whom",
       title: "For deg som vil ha kontroll",
@@ -68,11 +68,15 @@ export const standardOnboarding: OnboardingContent = {
       ],
     },
     {
-      key: "start",
-      title: "Kom i gang på 1–2 minutter",
-      body: ["Gjør dette først – så får du live utregninger med en gang:"],
-      // siste steg har ikke “les mer”
-    },
+  key: "start",
+  title: "Start her",
+  body: [
+    "Legg inn saldo etter regninger",
+    "Legg inn dato for neste lønn",
+    "Da får du et svar med en gang",
+    "Oppdater saldo underveis",
+  ],
+},
   ],
 };
 

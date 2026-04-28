@@ -230,6 +230,14 @@ export default function Home() {
     });
   }, [monthStartBalance, result, lastSavedBalance, today]);
 
+  // 🔧 RIKTIG ukesverdi (kun denne kalenderuken)
+const todayDate = new Date(today);
+const dayOfWeek = todayDate.getDay() === 0 ? 6 : todayDate.getDay() - 1; // man=0
+const daysLeftThisWeek = 7 - dayOfWeek;
+
+const weekSafeAmount =
+  weekResult.daily * Math.min(daysLeftThisWeek, weekResult.spanDays);
+
   if (!result || result.totalDays <= 0) {
     return <EmptyStateMissingBudget />;
   }
@@ -325,7 +333,7 @@ borderTop: "none", // 🔥 VIKTIG
                       color: "#C07862",
                     }}
                   >
-                    {fmtKr(weekResult.daily * weekResult.spanDays)} kr
+                    {fmtKr(weekSafeAmount)} kr
                   </div>
                 </div>
                 
@@ -345,7 +353,7 @@ borderTop: "none", // 🔥 VIKTIG
                       color: "#C07862",
                     }}
                   >
-                    {fmtKr(weekResult.daily * weekResult.spanDays)} kr
+                    {fmtKr(weekSafeAmount)} kr
                   </div>
                 </div>
                 {weekResult.weeksAttached > 0 && (

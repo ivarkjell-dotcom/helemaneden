@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import React from "react";
 import Link from "next/link";
 import {
@@ -303,6 +304,24 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
   }}
 >
   <span>Din bruk i testen</span>
+</Link>
+
+{/* FAQ */}
+<Link
+  href="/faq"
+  onClick={onClose}
+  style={{
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 12,
+    fontSize: 13,
+    textDecoration: "none",
+    color: "var(--text-primary)",
+    opacity: 0.8,
+  }}
+>
+  <span>Spørsmål og svar</span>
 </Link>
 
               <Link

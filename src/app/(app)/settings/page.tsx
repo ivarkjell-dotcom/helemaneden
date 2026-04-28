@@ -1,9 +1,12 @@
 "use client";
 
+import InfoTooltip from "../../components/ui/InfoTooltip";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const KEY = "hm_settings_v1";
+
+
 
 type Settings = {
   monthStartBalance: number;
@@ -82,6 +85,30 @@ export default function SettingsPage() {
     >
       <h1 style={{ fontSize: 20, margin: 0 }}>Oppsett</h1>
 
+      <p style={{ marginTop: "4px", color: "#6b7280", fontSize: "14px" }}>
+  Legg inn hva du har tilgjengelig etter faste utgifter.  
+  Vi bruker det til å beregne hva du trygt kan bruke frem til neste lønn.
+      </p>
+
+      <InfoTooltip title="Hva skal jeg legge inn?">
+  <p><strong>Saldo ved lønn</strong><br />
+  Pengene du har igjen etter faste utgifter, sparing og buffer.</p>
+
+  <p style={{ marginTop: "8px" }}>
+    <strong>Dato for lønn</strong><br />
+    Når denne perioden startet.
+  </p>
+
+  <p style={{ marginTop: "8px" }}>
+    <strong>Dato for neste lønn</strong><br />
+    Når neste periode slutter.
+  </p>
+
+  <p style={{ marginTop: "8px", color: "#6b7280" }}>
+    Du kan justere dette senere.
+  </p>
+</InfoTooltip>
+
       {error && (
         <div
           style={{
@@ -116,7 +143,14 @@ export default function SettingsPage() {
   border: "1px solid var(--border-soft)",
   fontSize: 16,
 }}
+
+        
         />
+
+        <p style={{ fontSize: "12px", color: "#9ca3af", marginTop: "4px" }}>
+  Etter faste utgifter og sparing
+</p>
+
       </label>
 
       <label style={{ display: "grid", gap: 6 }}>
