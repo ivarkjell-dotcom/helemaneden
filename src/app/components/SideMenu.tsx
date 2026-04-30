@@ -5,9 +5,6 @@ import React from "react";
 import Link from "next/link";
 import {
   X,
-  Wallet,
-  Settings,
-  Bell,
   Moon,
   Download,
   Check,
@@ -19,9 +16,7 @@ type SideMenuProps = {
 };
 
 export function SideMenu({ open, onClose }: SideMenuProps) {
-  const [notificationsOn, setNotificationsOn] = React.useState(false);
-  const [weekdayTime, setWeekdayTime] = React.useState("09:00");
-  const [weekendTime, setWeekendTime] = React.useState("10:00");
+  
   const [darkModeOn, setDarkModeOn] = React.useState(false);
 
   const [isInstalled, setIsInstalled] = React.useState(false);
@@ -29,18 +24,11 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
 
   /* ===== INIT ===== */
   React.useEffect(() => {
-    setNotificationsOn(
-      localStorage.getItem("hm_notifications_enabled") === "true"
-    );
+    
 
     setDarkModeOn(localStorage.getItem("hm_dark_mode") === "true");
 
-    setWeekdayTime(
-      localStorage.getItem("hm_notification_time_weekday") || "09:00"
-    );
-    setWeekendTime(
-      localStorage.getItem("hm_notification_time_weekend") || "10:00"
-    );
+    
 
     const standalone =
       window.matchMedia("(display-mode: standalone)").matches ||
@@ -161,69 +149,7 @@ export function SideMenu({ open, onClose }: SideMenuProps) {
 
 
             <div style={{ paddingLeft: 32, display: "grid", gap: 14 }}>
-              {/* Varsler */}
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <Bell {...iconProps} />
-                <span style={{ flex: 1 }}>Varsler</span>
-                <Toggle
-                  on={notificationsOn}
-                  onToggle={async () => {
-                    const next = !notificationsOn;
-
-                    if (next && "Notification" in window) {
-                      const p = await Notification.requestPermission();
-                      if (p !== "granted") return;
-                    }
-
-                    setNotificationsOn(next);
-                    localStorage.setItem(
-                      "hm_notifications_enabled",
-                      String(next)
-                    );
-                  }}
-                />
-              </div>
-
-              {notificationsOn && (
-                <div
-                  style={{
-                    display: "grid",
-                    gap: 8,
-                    marginLeft: 32,
-                    fontSize: 13,
-                  }}
-                >
-                  <label style={{ display: "flex", gap: 8 }}>
-                    <span style={{ width: 80 }}>Ukedager</span>
-                    <input
-                      type="time"
-                      value={weekdayTime}
-                      onChange={(e) => {
-                        setWeekdayTime(e.target.value);
-                        localStorage.setItem(
-                          "hm_notification_time_weekday",
-                          e.target.value
-                        );
-                      }}
-                    />
-                  </label>
-
-                  <label style={{ display: "flex", gap: 8 }}>
-                    <span style={{ width: 80 }}>Helg</span>
-                    <input
-                      type="time"
-                      value={weekendTime}
-                      onChange={(e) => {
-                        setWeekendTime(e.target.value);
-                        localStorage.setItem(
-                          "hm_notification_time_weekend",
-                          e.target.value
-                        );
-                      }}
-                    />
-                  </label>
-                </div>
-              )}
+              
 
               {/* Dark mode */}
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>

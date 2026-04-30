@@ -491,9 +491,11 @@ borderTop: "none", // 🔥 VIKTIG
     </div>
 
     <HistoryDropdown
-      items={history}
-      startBalance={monthStartBalance}
-    />
+  items={history}
+  startBalance={monthStartBalance}
+  periodStart={monthStartDate}
+  periodEnd={nextPayday}
+/>
   </div>
 
 </section>

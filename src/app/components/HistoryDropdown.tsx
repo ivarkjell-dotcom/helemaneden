@@ -17,14 +17,18 @@ function fmtKr(n: number) {
   return new Intl.NumberFormat("nb-NO").format(Math.round(n));
 }
 
-function isSameMonth(a: ISODate, b: ISODate) {
-  const da = new Date(a);
-  const db = new Date(b);
-  return (
-    da.getFullYear() === db.getFullYear() &&
-    da.getMonth() === db.getMonth()
-  );
+function formatPeriodLabel(start: ISODate, end: ISODate) {
+  const format = (iso: ISODate) => {
+    const d = new Date(iso);
+    return `${String(d.getDate()).padStart(2, "0")}.${String(
+      d.getMonth() + 1
+    ).padStart(2, "0")}`;
+  };
+
+  return `${format(start)} – ${format(end)}`;
 }
+
+
 
 function todayISO(): ISODate {
   return new Date().toISOString().slice(0, 10) as ISODate;
@@ -33,26 +37,29 @@ function todayISO(): ISODate {
 export function HistoryDropdown({
   items,
   startBalance,
+  periodStart,
+  periodEnd,
 }: {
   items: BalanceEntry[];
   startBalance: number;
-}) {
+  periodStart: ISODate;
+  periodEnd: ISODate;
+})
+{
   const [open, setOpen] = useState(false);
   const [view, setView] = useState<"current" | "previous">("current");
 
   if (!items || items.length === 0) return null;
 
-  const today = todayISO();
+  
 
-  const currentMonth = items.filter(
-    (i) =>
-      isSameMonth(i.date, today) &&
-      i.label !== "Startsaldo etter lønn"
-  );
+  const currentPeriod = items.filter(
+  (i) => i.date >= periodStart && i.date <= periodEnd
+);
 
-  const previousMonth = items.filter(
-    (i) => !isSameMonth(i.date, today)
-  );
+const previousPeriod = items.filter(
+  (i) => i.date < periodStart
+);
 
   const latest = items[0] ?? { balance: 0, date: todayISO() };
 
@@ -144,29 +151,29 @@ export function HistoryDropdown({
   }}
 />
               <div style={{ fontSize: 13, opacity: 0.6, marginBottom: 6 }}>
-                Denne perioden
-              </div>
+  Periode {formatPeriodLabel(periodStart, periodEnd)}
+</div>
 
               <div style={{ padding: "6px 0" }}>
                 <strong>Startsaldo</strong> {fmtKr(startBalance)} kr
               </div>
 
-              {currentMonth.slice(0, 5).map((h, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    fontSize: 13,
-                    padding: "6px 0",
-                  }}
-                >
-                  <span>{h.label ?? fmtDate(h.date)}</span>
-                  <span>{fmtKr(h.balance)} kr</span>
-                </div>
-              ))}
+              {currentPeriod.map((h, i) => (
+  <div
+    key={i}
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      fontSize: 13,
+      padding: "6px 0",
+    }}
+  >
+    <span>{h.label ?? fmtDate(h.date)}</span>
+    <span>{fmtKr(h.balance)} kr</span>
+  </div>
+))}
 
-              {previousMonth.length > 0 && (
+              {previousPeriod.length > 0 && (
                 <button
                   onClick={() => setView("previous")}
                   style={{
@@ -178,7 +185,7 @@ export function HistoryDropdown({
                     opacity: 0.6,
                   }}
                 >
-                  Se forrige →
+                  Se forrige periode →
                 </button>
               )}
             </>
@@ -200,7 +207,11 @@ export function HistoryDropdown({
                 ← Tilbake
               </button>
 
-              {previousMonth.slice(0, 10).map((h, i) => (
+              <div style={{ fontSize: 13, opacity: 0.6, marginBottom: 6 }}>
+      Forrige periode
+    </div>
+
+              {previousPeriod.slice(0, 10).map((h, i) => (
                 <div
                   key={i}
                   style={{

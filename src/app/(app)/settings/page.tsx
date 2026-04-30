@@ -91,21 +91,46 @@ export default function SettingsPage() {
       </p>
 
       <InfoTooltip title="Hva skal jeg legge inn?">
-  <p><strong>Saldo ved lønn</strong><br />
-  Pengene du har igjen etter satt av til faste utgifter, sparing og buffer.</p>
-
-  <p style={{ marginTop: "8px" }}>
-    <strong>Dato for lønn</strong><br />
-    Når denne perioden startet.
+  <p>
+    Det du har igjen å bruke frem til neste lønn.
   </p>
 
   <p style={{ marginTop: "8px" }}>
-    <strong>Dato for neste lønn</strong><br />
-    Når neste periode slutter.
+    Betal faste utgifter og sett av til sparing først.  
+    Legg deretter inn det som er igjen.
   </p>
 
-  <p style={{ marginTop: "8px", color: "#6b7280" }}>
-    Du kan justere dette senere.
+  <p style={{ marginTop: "8px" }}>
+    Ikke hele saldoen på konto, men det som faktisk er tilgjengelig.
+  </p>
+
+  <p style={{ marginTop: "10px", fontWeight: 600 }}>
+    Starter du midt i perioden?
+  </p>
+
+  <p>
+    Legg inn det du har igjen i dag.  
+    Da får du et riktig svar fremover.
+  </p>
+
+  <p style={{ marginTop: "10px", fontWeight: 600 }}>
+    Hva med datoene?
+  </p>
+
+  <p>
+    Startdato er når perioden din begynner.
+  </p>
+
+  <p style={{ marginTop: "6px" }}>
+    Har du fått lønn nylig, bruk lønnsdato.
+  </p>
+
+  <p style={{ marginTop: "6px" }}>
+    Starter du nå, bruk dagens dato.
+  </p>
+
+  <p style={{ marginTop: "6px" }}>
+    Neste lønn er når neste periode starter.
   </p>
 </InfoTooltip>
 
@@ -125,7 +150,7 @@ export default function SettingsPage() {
 
       <label style={{ display: "grid", gap: 6 }}>
         <span style={{ fontWeight: 700 }}>
-          Saldo ved lønn
+          Saldo tilgjengelig nå
         </span>
         <input
           type="number"
@@ -154,48 +179,58 @@ export default function SettingsPage() {
       </label>
 
       <label style={{ display: "grid", gap: 6 }}>
-        <span style={{ fontWeight: 700 }}>
-          Dato for lønn
-        </span>
-        <input
-          type="date"
-          value={s.monthStartDate}
-          onChange={(e) =>
-            setS({
-              ...s,
-              monthStartDate: e.target.value,
-            })
-          }
-          style={{
-  padding: 14,
-  borderRadius: 20,
-  border: "1px solid var(--border-soft)",
-  fontSize: 16,
-}}
-        />
-      </label>
+  <span style={{ fontWeight: 700 }}>
+    Startdato
+  </span>
+
+  <input
+    type="date"
+    value={s.monthStartDate}
+    onChange={(e) =>
+      setS({
+        ...s,
+        monthStartDate: e.target.value,
+      })
+    }
+    style={{
+      padding: 14,
+      borderRadius: 20,
+      border: "1px solid var(--border-soft)",
+      fontSize: 16,
+    }}
+  />
+
+  <p style={{ fontSize: "12px", color: "#9ca3af", marginTop: "4px" }}>
+    Bruk lønnsdato, eller i dag hvis du starter nå
+  </p>
+</label>
 
       <label style={{ display: "grid", gap: 6 }}>
-        <span style={{ fontWeight: 700 }}>
-          Dato for neste lønn
-        </span>
-        <input
-          type="date"
-          value={s.nextPayday}
-          onChange={(e) =>
-            setS({
-              ...s,
-              nextPayday: e.target.value,
-            })
-          }
-          style={{
-  padding: 14,
-  borderRadius: 20,
-  border: "1px solid var(--border-soft)",
-  fontSize: 16,
-}}
-        />
-      </label>
+  <span style={{ fontWeight: 700 }}>
+    Neste lønn
+  </span>
+
+  <input
+    type="date"
+    value={s.nextPayday}
+    onChange={(e) =>
+      setS({
+        ...s,
+        nextPayday: e.target.value,
+      })
+    }
+    style={{
+      padding: 14,
+      borderRadius: 20,
+      border: "1px solid var(--border-soft)",
+      fontSize: 16,
+    }}
+  />
+
+  <p style={{ fontSize: "12px", color: "#9ca3af", marginTop: "4px" }}>
+    Når neste periode starter
+  </p>
+</label>
 
       <button
         onClick={save}
